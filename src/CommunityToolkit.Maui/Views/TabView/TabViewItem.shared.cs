@@ -1,4 +1,4 @@
-namespace IGT.FluidConnect.Controls;
+namespace CommunityToolkit.Maui.Views.TabView;
 
 public class TabViewItem : ContentView
 {

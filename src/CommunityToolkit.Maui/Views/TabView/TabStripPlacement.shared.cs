@@ -1,6 +1,5 @@
-﻿namespace IGT.FluidConnect.Controls
+﻿namespace CommunityToolkit.Maui.Views.TabView;
+
+public enum TabStripPlacement
 {
-    public class TabStripPlacement
-    {
-    }
 }

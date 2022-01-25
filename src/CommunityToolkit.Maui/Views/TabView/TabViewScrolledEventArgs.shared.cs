@@ -1,6 +1,5 @@
-﻿namespace IGT.FluidConnect.Controls
+﻿namespace CommunityToolkit.Maui.Views.TabView;
+
+public class TabViewScrolledEventArgs : EventArgs
 {
-    public class TabViewScrolledEventArgs : EventArgs
-    {
-    }
 }

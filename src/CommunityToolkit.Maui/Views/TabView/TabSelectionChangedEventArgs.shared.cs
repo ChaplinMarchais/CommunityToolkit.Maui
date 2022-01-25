@@ -1,7 +1,6 @@
-﻿namespace IGT.FluidConnect.Controls
-{
-    public class TabSelectionChangedEventArgs : EventArgs
-    {
+﻿namespace CommunityToolkit.Maui.Views.TabView;
 
-    }
+public class TabSelectionChangedEventArgs : EventArgs
+{
+
 }
