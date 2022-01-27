@@ -204,6 +204,7 @@ public class TabView : ContentView, IDisposable
 
 	readonly WeakEventManager selectionChangedManager = new();
 	readonly WeakEventManager tabViewScrolledManager = new();
+	readonly WeakEventManager tabViewLoadingManager = new();
 
 	public event EventHandler<TabSelectionChangedEventArgs> SelectionChanged
 	{
@@ -218,17 +219,50 @@ public class TabView : ContentView, IDisposable
 	}
 
 	/// <summary>
+	/// Raised when constructing the <see cref="TabView"/>
+	/// </summary>
+	/// <remarks>
+	/// This event is raised from <see cref="InitializeComponent"/> before any value
+	/// has been assigned to the <see cref="IContentView.Content"/> property for the
+	/// sending <see cref="TabView"/>.
+	/// </remarks>
+	public event EventHandler Loading
+	{
+		add => tabViewLoadingManager.AddEventHandler(value);
+		remove => tabViewLoadingManager.RemoveEventHandler(value);
+	}
+
+	StackLayout tabContainer = new() { Spacing = 10u, Orientation = StackOrientation.Horizontal };
+
+	ScrollView mainContainer = new()
+	{
+		HorizontalScrollBarVisibility = ScrollBarVisibility.Never,
+		VerticalOptions = LayoutOptions.Start,
+		Orientation = ScrollOrientation.Horizontal
+	};
+
+	/// <summary>
 	/// Initializes a new instance of the <see cref="TabView"/> class.
 	/// </summary>
 	public TabView()
 	{
-		Content = new StackLayout
-		{
-			Children = {
-				new Label { Text = "Welcome to .NET MAUI!" }
-			}
-		};
+		InitializeComponent();
 	}
+
+	/// <summary>
+	/// Initializes the child elements of the <see cref="TabView"/>
+	/// </summary>
+	void InitializeComponent()
+	{
+		// Raising the Loading event here to enable a consumer of TabView to hook into the initialization via the self reference as sender
+		tabViewLoadingManager.RaiseEvent(this, new(), nameof(Loading));
+
+		mainContainer.Content = tabContainer;
+		Content = mainContainer;
+		Padding = new Thickness(0, 10, 0, 0);
+	}
+
+	#region IDisposable Implementation
 
 	/// <summary>
 	/// Disposes the.
@@ -256,5 +290,7 @@ public class TabView : ContentView, IDisposable
 		// Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
 		Dispose(disposing: true);
 		GC.SuppressFinalize(this);
-	}
+	} 
+	
+	#endregion
 }
