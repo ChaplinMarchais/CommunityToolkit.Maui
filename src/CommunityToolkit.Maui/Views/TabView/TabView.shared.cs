@@ -1,18 +1,20 @@
 using System.Collections;
 using Microsoft.Maui;
 using CommunityToolkit.Maui.Core;
+using CommunityToolkit.Maui.Helpers;
 
 namespace CommunityToolkit.Maui.Views.TabView;
 /// <summary>
 /// The tab view.
 /// </summary>
 
-[ContentProperty(nameof(Content))]
+[ContentProperty(nameof(TabItemsSource))]
 public class TabView : ContentView, IDisposable
 {
 	bool disposedValue;
 
-	public static readonly BindableProperty TabItemsSourceProperty = BindableProperty.Create(nameof(TabItemsSource), typeof(IList), typeof(TabView), null);
+	public static readonly BindableProperty TabItemsSourceProperty = BindableProperty.Create(nameof(TabItemsSource), typeof(IList), typeof(TabView), defaultValueCreator: _ => new(), propertyChanged: OnTabItemsSourceChanged);
+
 	/// <summary>
 	/// Gets or sets the tab items source.
 	/// </summary>
@@ -202,8 +204,8 @@ public class TabView : ContentView, IDisposable
 		set => SetValue(IsSwipeEnabledProperty, value);
 	}
 
-	readonly WeakEventManager selectionChangedManager = new();
-	readonly WeakEventManager tabViewScrolledManager = new();
+	readonly WeakEventManager<TabSelectionChangedEventArgs> selectionChangedManager = new();
+	readonly WeakEventManager<TabViewScrolledEventArgs> tabViewScrolledManager = new();
 	readonly WeakEventManager tabViewLoadingManager = new();
 
 	public event EventHandler<TabSelectionChangedEventArgs> SelectionChanged
@@ -260,6 +262,18 @@ public class TabView : ContentView, IDisposable
 		mainContainer.Content = tabContainer;
 		Content = mainContainer;
 		Padding = new Thickness(0, 10, 0, 0);
+	}
+
+	public virtual void OnSelectionChanged(object sender, TabSelectionChangedEventArgs args)
+	{
+		//TODO: Implement default OnSelectionChanged behavior
+	}
+
+	static void OnTabItemsSourceChanged(BindableObject bindable, object oldValue, object newValue)
+	{
+		var tabView = bindable as TabView;
+
+
 	}
 
 	#region IDisposable Implementation
