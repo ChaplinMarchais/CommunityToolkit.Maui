@@ -134,7 +134,7 @@ public static class WeakEventManagerExtensions
 	/// <param name="sender">Sender</param>
 	/// <param name="eventArgs">Event arguments</param>
 	/// <param name="eventName">Event name</param>
-	public static void RaiseEvent(this WeakEventManager weakEventManager, object? sender, object eventArgs, string eventName)
+	public static void RaiseEvent(this WeakEventManager weakEventManager, object sender, object eventArgs, string eventName)
 	{
 		_ = weakEventManager ?? throw new ArgumentNullException(nameof(weakEventManager));
 
