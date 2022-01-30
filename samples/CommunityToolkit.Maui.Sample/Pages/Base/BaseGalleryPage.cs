@@ -6,19 +6,20 @@ using Application = Microsoft.Maui.Controls.Application;
 
 namespace CommunityToolkit.Maui.Sample.Pages;
 
-public abstract class BaseGalleryPage<TViewModel> : BasePage<TViewModel> where TViewModel : BaseGalleryViewModel
+public abstract class BaseGalleryPage<TViewModel> : BasePage where TViewModel : BaseGalleryViewModel, new()
 {
-	public BaseGalleryPage(string title, TViewModel viewModel) : base(viewModel)
+	public BaseGalleryPage(string title)
 	{
 		Title = title;
+		BindingContext = new TViewModel();
 
-		Padding = 0;
+		Padding = new Thickness(20, 0);
 
 		Content = new CollectionView
 		{
 			SelectionMode = SelectionMode.Single,
 			ItemTemplate = new GalleryDataTemplate()
-		}.Bind(CollectionView.ItemsSourceProperty, nameof(BaseGalleryViewModel.Items))
+		}.Bind(CollectionView.ItemsSourceProperty, nameof(BaseGalleryViewModel.FilteredItems))
 		 .Invoke(collectionView => collectionView.SelectionChanged += HandleSelectionChanged);
 	}
 
@@ -31,7 +32,7 @@ public abstract class BaseGalleryPage<TViewModel> : BasePage<TViewModel> where T
 
 		if (e.CurrentSelection.FirstOrDefault() is SectionModel sectionModel)
 		{
-			await Navigation.PushAsync(sectionModel.Page);
+			await Navigation.PushAsync(PreparePage(sectionModel));
 		}
 	}
 
@@ -50,14 +51,14 @@ public abstract class BaseGalleryPage<TViewModel> : BasePage<TViewModel> where T
 			BackgroundColor = (Color)(Application.Current?.Resources["AppBackgroundColor"] ?? throw new InvalidOperationException()),
 
 			RowDefinitions = Rows.Define(
-				(Row.TopPadding, 12),
+				(Row.TopPadding, 6),
 				(Row.Content, Star),
-				(Row.BottomPadding, 12)),
+				(Row.BottomPadding, 6)),
 
 			ColumnDefinitions = Columns.Define(
-				(Column.LeftPadding, 24),
+				(Column.LeftPadding, 6),
 				(Column.Content, Star),
-				(Column.RightPadding, 24)),
+				(Column.RightPadding, 6)),
 
 			Children =
 			{
@@ -77,14 +78,12 @@ public abstract class BaseGalleryPage<TViewModel> : BasePage<TViewModel> where T
 
 					RowDefinitions = Rows.Define(
 						(CardRow.Title, 24),
-						(CardRow.Description, Auto)),
-
-					ColumnDefinitions = Columns.Define(Star),
+						(CardRow.Description, Star)),
 
 					Children =
 					{
 						new Label { Style = (Style)(Application.Current?.Resources["label_section_header"] ?? throw new InvalidOperationException()) }
-							.Row(CardRow.Title).FillExpand()
+							.Row(CardRow.Title)
 							.Bind(Label.TextProperty, nameof(SectionModel.Title)),
 
 						new Label { MaxLines = 4, LineBreakMode = LineBreakMode.WordWrap }

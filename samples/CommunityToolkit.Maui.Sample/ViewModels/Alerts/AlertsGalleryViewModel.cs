@@ -1,15 +1,16 @@
-﻿using CommunityToolkit.Maui.Sample.Models;
+﻿using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Sample.Models;
 using CommunityToolkit.Maui.Sample.Pages.Alerts;
 
 namespace CommunityToolkit.Maui.Sample.ViewModels.Alerts;
 
 public class AlertsGalleryViewModel : BaseGalleryViewModel
 {
-	public AlertsGalleryViewModel(SnackbarPage snackbarPage)
-		: base(new[]
+	protected override IEnumerable<SectionModel> CreateItems() => new[]
 		{
-			new SectionModel(snackbarPage, "Snackbar", "Show Snackbar")
-		})
-	{
-	}
+			new SectionModel(
+				typeof(SnackbarPage),
+				nameof(Snackbar), 
+				"Show Snackbar")
+		};
 }
