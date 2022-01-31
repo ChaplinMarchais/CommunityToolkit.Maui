@@ -19,16 +19,22 @@ static class EventManagerService
 		}
 
 		if (handlerTarget == null)
+		{
 			targets.Add(new Subscription(null, methodInfo));
+		}
 		else
+		{
 			targets.Add(new Subscription(new WeakReference(handlerTarget), methodInfo));
+		}
 	}
 
 	internal static void RemoveEventHandler(in string eventName, in object? handlerTarget, in MemberInfo methodInfo, in Dictionary<string, List<Subscription>> eventHandlers)
 	{
 		var doesContainSubscriptions = eventHandlers.TryGetValue(eventName, out var subscriptions);
 		if (!doesContainSubscriptions || subscriptions == null)
+		{
 			return;
+		}
 
 		for (var n = subscriptions.Count; n > 0; n--)
 		{
@@ -145,9 +151,13 @@ static class EventManagerService
 				var subscriber = subscription.Subscriber?.Target;
 
 				if (subscriber == null)
+				{
 					toRemove.Add(subscription);
+				}
 				else
+				{
 					toRaise.Add((subscriber, subscription.Handler));
+				}
 			}
 
 			for (var i = 0; i < toRemove.Count; i++)
@@ -164,9 +174,13 @@ static class EventManagerService
 		var typeRTDynamicMethod = typeInfoRTDynamicMethod?.AsType();
 
 		if (typeInfoRTDynamicMethod != null && typeInfoRTDynamicMethod.IsAssignableFrom(rtDynamicMethod.GetType().GetTypeInfo()))
+		{
 			return (DynamicMethod?)typeRTDynamicMethod?.GetRuntimeFields()?.FirstOrDefault(f => f?.Name is "m_owner")?.GetValue(rtDynamicMethod);
+		}
 		else
+		{
 			return null;
+		}
 	}
 
 	static bool IsLightweightMethod(this MethodBase method)

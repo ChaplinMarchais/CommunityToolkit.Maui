@@ -61,10 +61,14 @@ public class WeakEventManager<TEventArgs>
 	public void RemoveEventHandler(EventHandler<TEventArgs> handler, [CallerMemberName] string eventName = "")
 	{
 		if (IsNullOrWhiteSpace(eventName))
+		{
 			throw new ArgumentNullException(nameof(eventName));
+		}
 
 		if (handler == null)
+		{
 			throw new ArgumentNullException(nameof(handler));
+		}
 
 		var methodInfo = handler.GetMethodInfo() ?? throw new NullReferenceException("Could not locate MethodInfo");
 
@@ -79,10 +83,14 @@ public class WeakEventManager<TEventArgs>
 	public void RemoveEventHandler(Action<TEventArgs> action, [CallerMemberName] string eventName = "")
 	{
 		if (IsNullOrWhiteSpace(eventName))
+		{
 			throw new ArgumentNullException(nameof(eventName));
+		}
 
 		if (action == null)
+		{
 			throw new ArgumentNullException(nameof(action));
+		}
 
 		var methodInfo = action.GetMethodInfo() ?? throw new NullReferenceException("Could not locate MethodInfo");
 
