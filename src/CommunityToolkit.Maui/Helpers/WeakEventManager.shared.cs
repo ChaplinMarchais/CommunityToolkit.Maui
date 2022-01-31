@@ -5,6 +5,8 @@ using System.Runtime.CompilerServices;
 using Microsoft.Maui.Controls;
 
 using static System.String;
+using static System.ArgumentNullException;
+using static CommunityToolkit.Maui.Extensions.ArgumentNullExceptionExtensions;
 
 // Inspired by AsyncAwaitBestPractices.WeakEventManager: https://github.com/brminnick/AsyncAwaitBestPractices
 namespace CommunityToolkit.Maui.Helpers;
@@ -24,11 +26,8 @@ public class WeakEventManager<TEventArgs>
 	/// <param name="eventName">Event name</param>
 	public void AddEventHandler(EventHandler<TEventArgs> handler, [CallerMemberName] string eventName = "")
 	{
-		if (IsNullOrWhiteSpace(eventName))
-			throw new ArgumentNullException(nameof(eventName));
-
-		if (handler == null)
-			throw new ArgumentNullException(nameof(handler));
+		ThrowIfNullOrWhitespace(eventName);
+		ThrowIfNull(handler);
 
 		var methodInfo = handler.GetMethodInfo() ?? throw new NullReferenceException("Could not locate MethodInfo");
 
@@ -42,11 +41,8 @@ public class WeakEventManager<TEventArgs>
 	/// <param name="eventName">Event name</param>
 	public void AddEventHandler(Action<TEventArgs> action, [CallerMemberName] string eventName = "")
 	{
-		if (IsNullOrWhiteSpace(eventName))
-			throw new ArgumentNullException(nameof(eventName));
-
-		if (action == null)
-			throw new ArgumentNullException(nameof(action));
+		ThrowIfNullOrWhitespace(eventName);
+		ThrowIfNull(action);
 
 		var methodInfo = action.GetMethodInfo() ?? throw new NullReferenceException("Could not locate MethodInfo");
 
