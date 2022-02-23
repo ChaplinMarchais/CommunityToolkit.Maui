@@ -3,6 +3,7 @@ using CommunityToolkit.Maui.Sample.Pages.Alerts;
 using CommunityToolkit.Maui.Sample.Pages.Behaviors;
 using CommunityToolkit.Maui.Sample.Pages.Converters;
 using CommunityToolkit.Maui.Sample.Pages.Extensions;
+using CommunityToolkit.Maui.Sample.Pages.Views;
 
 namespace CommunityToolkit.Maui.Sample.ViewModels;
 
