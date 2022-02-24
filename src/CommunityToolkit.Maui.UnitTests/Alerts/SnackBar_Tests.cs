@@ -1,3 +1,4 @@
+using Font = Microsoft.Maui.Font;
 using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
 using FluentAssertions;
@@ -8,6 +9,11 @@ namespace CommunityToolkit.Maui.UnitTests.Alerts;
 public class Snackbar_Tests : BaseTest
 {
 	readonly ISnackbar snackbar = new Snackbar();
+
+	public Snackbar_Tests()
+	{
+		Assert.IsAssignableFrom<IAlert>(snackbar);
+	}
 
 	[Fact]
 	public async Task SnackbarShow_IsShownTrue()
@@ -51,7 +57,7 @@ public class Snackbar_Tests : BaseTest
 	public async Task VisualElement_DisplaySnackbar_ShownEventReceived()
 	{
 		var receivedEvents = new List<EventArgs>();
-		Snackbar.Shown += (sender, e) =>
+		Snackbar.Shown += (_, e) =>
 		{
 			receivedEvents.Add(e);
 		};

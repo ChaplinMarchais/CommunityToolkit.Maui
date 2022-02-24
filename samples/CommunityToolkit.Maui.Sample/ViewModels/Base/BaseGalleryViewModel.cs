@@ -4,10 +4,7 @@ namespace CommunityToolkit.Maui.Sample.ViewModels;
 
 public abstract class BaseGalleryViewModel : BaseViewModel
 {
-	string filterValue = string.Empty;
-	IEnumerable<SectionModel> filteredItems = Enumerable.Empty<SectionModel>();
-
-	public BaseGalleryViewModel()
+	protected BaseGalleryViewModel(IEnumerable<SectionModel> items)
 	{
 		Items = CreateItems().OrderBy(x => x.Title).ToList();
 		Filter();

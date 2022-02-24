@@ -1,29 +1,29 @@
 ﻿using System.Diagnostics;
-using System.Windows.Input;
-
-using CommunityToolkit.Maui.Markup;
-using CommunityToolkit.Maui.Sample.Models;
-using CommunityToolkit.Maui.Sample.Pages;
 using CommunityToolkit.Maui.Sample.ViewModels;
-using CommunityToolkit.Mvvm.Input;
 
 using static CommunityToolkit.Maui.Markup.GridRowsColumns;
 
-using Application = Microsoft.Maui.Controls.Application;
+public abstract class BasePage<TViewModel> : BasePage where TViewModel : BaseViewModel
+{
+	protected BasePage(TViewModel viewModel) : base(viewModel)
+	{
+	}
 
-namespace CommunityToolkit.Maui.Sample.Pages;
+	public new TViewModel BindingContext => (TViewModel)base.BindingContext;
+}
 
 public abstract class BasePage : ContentPage
 {
-	public BasePage()
+	protected BasePage(object? viewModel = null)
 	{
-		Padding = 20;
+		BindingContext = viewModel;
 
-		NavigateCommand = new AsyncRelayCommand<SectionModel>(parameter => parameter switch
+		Padding = Device.RuntimePlatform switch
 		{
-			null => Task.CompletedTask,
-			_ => Navigation.PushAsync(PreparePage(parameter))
-		});
+			// Work-around to ensure content doesn't get clipped by iOS Status Bar + Naviagtion Bar
+			Device.iOS => new Thickness(12, 108, 12, 12),
+			_ => 12
+		};
 	}
 
 	public ICommand NavigateCommand { get; }
