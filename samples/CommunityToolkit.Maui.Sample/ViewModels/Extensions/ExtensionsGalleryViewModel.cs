@@ -9,6 +9,8 @@ public class ExtensionsGalleryViewModel : BaseGalleryViewModel
 		: base(new[]
 		{
 			SectionModel.Create<ColorAnimationExtensionsViewModel>(nameof(ColorAnimationExtensions),
-				"Extension methods that provide color animations"),
-		};
+				"Extension methods that provide color animations")
+		})
+	{ 
+	}
 }

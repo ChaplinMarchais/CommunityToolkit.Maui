@@ -4,8 +4,8 @@ namespace CommunityToolkit.Maui.Sample.Pages.Behaviors;
 
 public class BehaviorsGalleryPage : BaseGalleryPage<BehaviorsGalleryViewModel>
 {
-	public BehaviorsGalleryPage()
-		: base("Behaviors")
+	public BehaviorsGalleryPage(BehaviorsGalleryViewModel viewModel)
+		: base("Behaviors", viewModel)
 	{
 	}
 }

@@ -1,7 +1,10 @@
 ﻿using System.Diagnostics;
+using System.Windows.Input;
+
+using CommunityToolkit.Maui.Sample.Models;
 using CommunityToolkit.Maui.Sample.ViewModels;
 
-using static CommunityToolkit.Maui.Markup.GridRowsColumns;
+namespace CommunityToolkit.Maui.Sample.Pages;
 
 public abstract class BasePage<TViewModel> : BasePage where TViewModel : BaseViewModel
 {
@@ -26,7 +29,7 @@ public abstract class BasePage : ContentPage
 		};
 	}
 
-	public ICommand NavigateCommand { get; }
+	//public ICommand? NavigateCommand { get; }
 
 	protected override void OnAppearing()
 	{
@@ -42,7 +45,7 @@ public abstract class BasePage : ContentPage
 	{
 		ArgumentNullException.ThrowIfNull(sectionModel);
 
-		var page = (Page)(Activator.CreateInstance(sectionModel.Type) ?? throw new ArgumentException("Invalid SectionModel"));
+		var page = (Page)(Activator.CreateInstance(sectionModel.ViewModelType) ?? throw new ArgumentException("Invalid SectionModel"));
 		page.Title = sectionModel.Title;
 
 		return page;
