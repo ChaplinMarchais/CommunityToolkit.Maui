@@ -5,6 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CommunityToolkit.Maui.Sample.ViewModels.Views;
-public partial class TabViewViewModel : BaseViewModel
+public class TabViewPageViewModel : BaseViewModel
 {
 }

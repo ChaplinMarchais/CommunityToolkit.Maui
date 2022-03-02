@@ -8,6 +8,7 @@
     xmlns:converters="clr-namespace:CommunityToolkit.Maui.Sample.Pages.Converters"
     xmlns:extensions="clr-namespace:CommunityToolkit.Maui.Sample.Pages.Extensions"
     xmlns:layouts="clr-namespace:CommunityToolkit.Maui.Sample.Pages.Layouts"
+    xmlns:views="clr-namespace:CommunityToolkit.Maui.Sample.Pages.Views"
     xmlns:pages="clr-namespace:CommunityToolkit.Maui.Sample.Pages"
     xmlns:sys="clr-namespace:System;assembly=netstandard"
     x:Class="CommunityToolkit.Maui.Sample.AppShell">
@@ -55,6 +56,9 @@
     </FlyoutItem>
     <FlyoutItem Title="Layouts" Route="LayoutsGalleryPage" Icon="dotnet_bot.png">
         <ShellContent ContentTemplate="{DataTemplate layouts:LayoutsGalleryPage}" />
+    </FlyoutItem>
+    <FlyoutItem Title="Views" Route="ViewsGalleryPage" Icon="dotnet_bot.png">
+        <ShellContent ContentTemplate="{DataTemplate views:TabViewPage}" />
     </FlyoutItem>
 
     <Shell.FlyoutFooter>

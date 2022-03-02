@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Maui.Sample.ViewModels;
+﻿using CommunityToolkit.Maui.Sample.Pages.Views;
+using CommunityToolkit.Maui.Sample.ViewModels;
 using CommunityToolkit.Maui.Sample.ViewModels.Alerts;
 using CommunityToolkit.Maui.Sample.ViewModels.Behaviors;
 using CommunityToolkit.Maui.Sample.ViewModels.Converters;
@@ -55,11 +56,8 @@ public static class MauiProgram
 		// Add Layouts
 		builder.Services.AddTransient<UniformItemsLayoutViewModel>();
 
-		// Add Views Pages
-		builder.Services.AddTransient<TabViewPage>();
-
 		// Add Views View Models
-		builder.Services.AddTransient<TabViewViewModel>();
+		builder.Services.AddTransient<TabViewPageViewModel>();
 
 		return builder.Build();
 	}
