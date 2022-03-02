@@ -1,10 +1,11 @@
+using System.Collections.ObjectModel;
+
 namespace CommunityToolkit.Maui.Views.TabView;
 
 /// <summary>
 /// The tab view item.
 /// </summary>
-[ContentProperty(nameof(Content))]
-public class TabViewItem : ContentView
+public partial class TabViewItem : ContentView
 {
 	/// <summary>
 	/// Gets or sets the icon.
@@ -72,11 +73,24 @@ public class TabViewItem : ContentView
 	/// </summary>
 	public TabViewItem()
 	{
-		Content = new StackLayout
+		ControlTemplate = ResolveControlTemplate();
+	}
+
+	public override ControlTemplate ResolveControlTemplate() => new DefaultTabViewItemTemplate();
+
+
+
+	internal sealed class DefaultTabViewItemTemplate : ControlTemplate
+	{
+		public DefaultTabViewItemTemplate() : base(() => CreateTemplate())
 		{
-			Children = {
-				new Label { Text = "Welcome to .NET MAUI!" }
-			}
-		};
+
+		}
+
+		public static View CreateTemplate()
+		{
+			var label = new Label { Text = "TAB ITEM" };
+			return new Frame { Content = label };
+		}
 	}
 }
