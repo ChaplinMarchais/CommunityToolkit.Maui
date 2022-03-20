@@ -21,24 +21,35 @@ public abstract class BasePage : ContentPage
 	{
 		BindingContext = viewModel;
 
+		BackgroundColor = (Color)(Application.Current?.Resources["AppBackgroundColor"] ?? throw new InvalidOperationException("Application.Current cannot be null"));
+
 		Padding = Device.RuntimePlatform switch
 		{
 			// Work-around to ensure content doesn't get clipped by iOS Status Bar + Naviagtion Bar
 			Device.iOS or Device.MacCatalyst => new Thickness(12, 108, 12, 12),
 			_ => 12
 		};
+
+		if(string.IsNullOrWhiteSpace(Title))
+		{
+			Title = this.GetType().Name;
+		}
 	}
 
 	//public ICommand? NavigateCommand { get; }
 
 	protected override void OnAppearing()
 	{
-		Debug.WriteLine($"OnAppearing: {this}");
+		base.OnAppearing();
+
+		Debug.WriteLine($"OnAppearing: {Title}");
 	}
 
 	protected override void OnDisappearing()
 	{
-		Debug.WriteLine($"OnDisappearing: {this}");
+		base.OnDisappearing();
+
+		Debug.WriteLine($"OnDisappearing: {Title}");
 	}
 
 	protected static Page PreparePage(SectionModel sectionModel)

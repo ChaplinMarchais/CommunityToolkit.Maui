@@ -9,8 +9,8 @@
        xmlns:extensions="clr-namespace:CommunityToolkit.Maui.Sample.Pages.Extensions"
        xmlns:layouts="clr-namespace:CommunityToolkit.Maui.Sample.Pages.Layouts"
        xmlns:pages="clr-namespace:CommunityToolkit.Maui.Sample.Pages"
-       xmlns:sys="clr-namespace:System;assembly=netstandard"
-       xmlns:views="clr-namespace:CommunityToolkit.Maui.Sample.Pages.Views">
+       xmlns:views="clr-namespace:CommunityToolkit.Maui.Sample.Pages.Views"
+       xmlns:sys="clr-namespace:System;assembly=netstandard">
 
     <Shell.FlyoutHeader>
         <Label Margin="{OnPlatform Default='0,0,0,12',
@@ -63,6 +63,12 @@
     </FlyoutItem>
     <FlyoutItem Title="Views" Route="ViewsGalleryPage" Icon="dotnet_bot.png">
         <ShellContent ContentTemplate="{DataTemplate views:TabViewPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Views"
+                Route="ViewsGalleryPage"
+                Icon="{OnPlatform Default='dotnet_bot.png', MacCatalyst=''}">
+        <ShellContent ContentTemplate="{DataTemplate views:ViewsGalleryPage}" />
     </FlyoutItem>
 
     <Shell.FlyoutFooter>

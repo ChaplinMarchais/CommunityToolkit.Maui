@@ -1,16 +1,18 @@
 ﻿using CommunityToolkit.Maui.Sample.Models;
-using CommunityToolkit.Maui.Sample.Pages.Views;
 
 namespace CommunityToolkit.Maui.Sample.ViewModels.Views;
 
-public class ViewsGalleryViewModel : BaseGalleryViewModel
+public sealed class ViewsGalleryViewModel : BaseGalleryViewModel
 {
-	public ViewsGalleryViewModel() 
+	public ViewsGalleryViewModel()
 		: base(new[]
 		{
-		SectionModel.Create<TabViewPageViewModel>(nameof(TabViewPage),
-			"Use the TabView control when you need to provide heirarchical navigation") 
+			SectionModel.Create<PopupPositionViewModel>("Custom Positioning Popup", Colors.Red, "Displays a basic popup anywhere on the screen using VerticalOptions and HorizontalOptions"),
+			SectionModel.Create<PopupAnchorViewModel>("Anchor Popup", Colors.Red, "Popups can be anchored to other view's on the screen"),
+			SectionModel.Create<MultiplePopupViewModel>("Mutiple Popups Page", Colors.Red, "A page demonstrating multiple different Popups"),
+			SectionModel.Create<TabViewPageViewModel>("Default TabView", Colors.Blue, "Use the TabView control when you need to provide heirarchical navigation"),
 		})
 	{
+
 	}
 }

@@ -1,10 +1,10 @@
-using CommunityToolkit.Maui.Sample.ViewModels.Views;
+﻿using CommunityToolkit.Maui.Sample.ViewModels.Views;
 
 namespace CommunityToolkit.Maui.Sample.Pages.Views;
 
 public class ViewsGalleryPage : BaseGalleryPage<ViewsGalleryViewModel>
 {
-	public ViewsGalleryPage(ViewsGalleryViewModel viewModel) : base("Views", viewModel)
+	public ViewsGalleryPage(ViewsGalleryViewModel viewsGalleryViewModel) : base("Views", viewsGalleryViewModel)
 	{
 	}
 }

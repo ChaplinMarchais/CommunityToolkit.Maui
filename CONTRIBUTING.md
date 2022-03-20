@@ -80,7 +80,7 @@ In general, this project will have all the basement to develop our Toolkit, incl
 
 Here we will have some:
 
-- BaseViews, could be Views that will be used by other Views, like PaddingButton (that's used by Snackbar) or the MCTPopup that will be a native control implemented in a way that can work with our handler. This same approach is used here
+- BaseViews, could be Views that will be used by other Views, like PaddingButton (that's used by Snackbar) or the MauiPopup (used by Popup) that will be a native control implemented in a way that can work with our handler. This same approach is used here
 
 - Primitives, which will be base types that can be used by everyone, like our MathOperator. So other frameworks may not have the concept of Behavior or Converter but they can mimic them as helper classes/methods and use our primitives.
 
@@ -181,6 +181,12 @@ if (something is not null)
    ActOnIt();
 }
 ```
+
+### `NotImplementedException`
+
+Please avoid adding new code that throws a `NotImplementedException`. According to the [Microsoft Docs](https://docs.microsoft.com/dotnet/api/system.notimplementedexception), we should only "throw a `NotImplementedException` exception in properties or methods in your own types when that member is still in development and will only later be implemented in production code. In other words, a NotImplementedException exception should be synonymous with 'still in development.'"
+
+In other words, `NotImplementedException` implies that a feature is still in development, indicating that the Pull Request is incomplete.
 
 ### Bug Fixes
 

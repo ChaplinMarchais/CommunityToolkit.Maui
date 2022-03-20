@@ -1,12 +1,13 @@
-﻿using Font = Microsoft.Maui.Font;
-using System.Reflection;
+﻿using System.Reflection;
 using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Maui.Extensions;
+using CommunityToolkit.Maui.Sample.ViewModels.Alerts;
+using Font = Microsoft.Maui.Font;
 
 namespace CommunityToolkit.Maui.Sample.Pages.Alerts;
 
-public partial class SnackbarPage : BasePage
+public partial class SnackbarPage : BasePage<SnackbarViewModel>
 {
 	const string displayCustomSnackbarText = "Display a Custom Snackbar, Anchored to this Button";
 	const string dismissCustomSnackbarText = "Dismiss Custom Snackbar";
@@ -17,7 +18,7 @@ public partial class SnackbarPage : BasePage
 
 	ISnackbar? customSnackbar;
 
-	public SnackbarPage()
+	public SnackbarPage(SnackbarViewModel snackbarViewModel) : base(snackbarViewModel)
 	{
 		InitializeComponent();
 
@@ -72,7 +73,7 @@ public partial class SnackbarPage : BasePage
 		}
 		else
 		{
-			throw new NotImplementedException($"{nameof(DisplayCustomSnackbarButton)}.{nameof(ITextButton.Text)} Not Recognized");
+			throw new NotSupportedException($"{nameof(DisplayCustomSnackbarButton)}.{nameof(ITextButton.Text)} Not Recognized");
 		}
 	}
 

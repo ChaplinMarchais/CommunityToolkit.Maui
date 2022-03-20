@@ -11,7 +11,7 @@ namespace CommunityToolkit.Maui.Behaviors;
 public abstract class BaseBehavior<TView> : Behavior<TView> where TView : VisualElement
 {
 	static readonly MethodInfo? getContextMethod
-		= typeof(BindableObject).GetRuntimeMethods()?.FirstOrDefault(m => m.Name == "GetContext");
+		= typeof(BindableObject).GetRuntimeMethods()?.FirstOrDefault(m => m.Name is "GetContext");
 
 	static readonly FieldInfo? bindingField
 		= getContextMethod?.ReturnType.GetRuntimeField("Binding");
@@ -53,8 +53,9 @@ public abstract class BaseBehavior<TView> : Behavior<TView> where TView : Visual
 	/// </summary>
 	/// <param name="sender"></param>
 	/// <param name="e"></param>
-	protected virtual void OnViewPropertyChanged(object? sender, PropertyChangedEventArgs e)
+	protected virtual void OnViewPropertyChanged(TView sender, PropertyChangedEventArgs e)
 	{
+
 	}
 
 	/// <inheritdoc/>
@@ -62,8 +63,10 @@ public abstract class BaseBehavior<TView> : Behavior<TView> where TView : Visual
 	protected override void OnAttachedTo(TView bindable)
 	{
 		base.OnAttachedTo(bindable);
+
 		View = bindable;
 		bindable.PropertyChanged += OnViewPropertyChanged;
+
 		TrySetBindingContext(new Binding
 		{
 			Path = BindingContextProperty.PropertyName,
@@ -75,8 +78,11 @@ public abstract class BaseBehavior<TView> : Behavior<TView> where TView : Visual
 	protected override void OnDetachingFrom(TView bindable)
 	{
 		base.OnDetachingFrom(bindable);
+
 		TryRemoveBindingContext();
+
 		bindable.PropertyChanged -= OnViewPropertyChanged;
+
 		View = null;
 	}
 
@@ -93,5 +99,15 @@ public abstract class BaseBehavior<TView> : Behavior<TView> where TView : Visual
 		return context != null
 			&& bindingField?.GetValue(context) is BindingBase binding
 			&& binding != defaultBinding;
+	}
+
+	void OnViewPropertyChanged(object? sender, PropertyChangedEventArgs e)
+	{
+		if (sender is not TView view)
+		{
+			throw new ArgumentException($"Behavior Cann Only Be Attached to {typeof(TView)}");
+		}
+
+		OnViewPropertyChanged(view, e);
 	}
 }
