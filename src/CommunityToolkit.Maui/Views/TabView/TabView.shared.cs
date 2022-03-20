@@ -15,7 +15,7 @@ namespace CommunityToolkit.Maui.Views;
 /// The tab view.
 /// </summary>
 [ContentProperty(nameof(Tabs))]
-public partial class TabView : ContentView
+public partial class TabView : ContentView, ITabViewController
 {
 	bool disposedValue;
 
@@ -65,14 +65,15 @@ public partial class TabView : ContentView
 		set => SetValue(TabContentDataTemplateProperty, value);
 	}
 
-	public static readonly BindableProperty SelectedIndexProperty = BindableProperty.Create(nameof(SelectedIndex), typeof(int), typeof(TabView), 0);
+	//TODO: Guard clauses to ensure that the value when set is valid for the current Tabs collection size
+	public static readonly BindableProperty SelectedTabIndexProperty = BindableProperty.Create(nameof(SelectedTabIndex), typeof(int), typeof(TabView), defaultValue: 0);
 	/// <summary>
 	/// Gets or sets the selected index.
 	/// </summary>
-	public int SelectedIndex
+	public int SelectedTabIndex
 	{
-		get => (int)GetValue(SelectedIndexProperty);
-		set => SetValue(SelectedIndexProperty, value);
+		get => (int)GetValue(SelectedTabIndexProperty);
+		set => SetValue(SelectedTabIndexProperty, value);
 	}
 
 	public static readonly BindableProperty TabStripPlacementProperty = BindableProperty.Create(nameof(TabStripPlacement), typeof(TabStripPlacement), typeof(TabView), default(TabStripPlacement));
@@ -225,10 +226,10 @@ public partial class TabView : ContentView
 		set => SetValue(IsSwipeEnabledProperty, value);
 	}
 
-	readonly WeakEventManager<TabSelectionChangedEventArgs> selectionChangedManager = new();
+	readonly WeakEventManager<SelectionChangedEventArgs> selectionChangedManager = new();
 	readonly WeakEventManager<TabViewScrolledEventArgs> tabViewScrolledManager = new();
 
-	public event EventHandler<TabSelectionChangedEventArgs> SelectionChanged
+	public event EventHandler<SelectionChangedEventArgs> SelectionChanged
 	{
 		add => selectionChangedManager.AddEventHandler(value);
 		remove => selectionChangedManager.RemoveEventHandler(value);
@@ -238,6 +239,30 @@ public partial class TabView : ContentView
 	{
 		add => tabViewScrolledManager.AddEventHandler(value);
 		remove => tabViewScrolledManager.RemoveEventHandler(value);
+	}
+
+	/// <inheritdoc/>
+	public event EventHandler<SelectedItemChangedEventArgs> SelectedTabChanged;
+
+	/// <summary>
+	/// Handles the user clicking on a new <see cref="TabViewItem"/>.
+	/// </summary>
+	public void OnSelectedTabChanged(object? sender, SelectedItemChangedEventArgs args)
+	{
+		throw new NotImplementedException();
+	}
+
+	/// <inheritdoc/>
+	public TabViewItem CurrentTab
+	{
+		get
+		{
+			return Tabs[SelectedTabIndex];
+		}
+		set
+		{
+			SelectedTabIndex = Tabs.IndexOf(value);
+		}
 	}
 
 	#region UI Members
@@ -440,10 +465,8 @@ public partial class TabView : ContentView
 		UpdateTabs();
 	}
 
-	public virtual void OnSelectionChanged(object sender, TabSelectionChangedEventArgs args)
 	void UpdateTabs()
 	{
-		//TODO: Implement default OnSelectionChanged behavior
 
 	}
 

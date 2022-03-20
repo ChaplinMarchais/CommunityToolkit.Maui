@@ -5,8 +5,16 @@ namespace CommunityToolkit.Maui.Views;
 /// <summary>
 /// The tab view item.
 /// </summary>
+[ContentProperty(nameof(TabConentView))]
 public partial class TabViewItem : ContentView
 {
+	public static readonly BindableProperty TabConentViewProperty = BindableProperty.Create(nameof(TabConentView), typeof(IView), typeof(TabViewItem), default(View));
+
+	public IView? TabConentView
+	{
+		get => (IView?)GetValue(TabConentViewProperty);
+		set => SetValue(TabConentViewProperty, value);
+	}
 	/// <summary>
 	/// Gets or sets the icon.
 	/// </summary>
@@ -19,6 +27,18 @@ public partial class TabViewItem : ContentView
 		get => (string)GetValue(IconProperty);
 		set => SetValue(IconProperty, value);
 	}
+
+	public static readonly BindableProperty IsSeperatorVisibleProperty = BindableProperty.Create(nameof(IsSeperatorVisible), typeof(bool), typeof(TabViewItem), true);
+
+	/// <summary>
+	/// Gets or sets a value indicating whether seperator is visible.
+	/// </summary>
+	public bool? IsSeperatorVisible
+	{
+		get => (bool)GetValue(IsSeperatorVisibleProperty);
+		set => SetValue(IsSeperatorVisibleProperty, value);
+	}
+
 	/// <summary>
 	/// Gets or sets the text.
 	/// </summary>
