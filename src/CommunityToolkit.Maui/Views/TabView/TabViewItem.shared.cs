@@ -1,6 +1,6 @@
 using System.Collections.ObjectModel;
 
-namespace CommunityToolkit.Maui.Views.TabView;
+namespace CommunityToolkit.Maui.Views;
 
 /// <summary>
 /// The tab view item.

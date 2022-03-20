@@ -8,7 +8,7 @@ using Microsoft.Maui.Controls;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Maui.Sample.Helpers;
 
-namespace CommunityToolkit.Maui.Views.TabView;
+namespace CommunityToolkit.Maui.Views;
 /// <summary>
 /// The tab view.
 /// </summary>

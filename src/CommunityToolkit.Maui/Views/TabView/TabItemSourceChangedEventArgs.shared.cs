@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CommunityToolkit.Maui.Views.TabView;
+namespace CommunityToolkit.Maui.Views;
 public class TabItemSourceChangedEventArgs : NotifyCollectionChangedEventArgs
 {
 	public TabItemSourceChangedEventArgs(NotifyCollectionChangedAction action) : base(action)

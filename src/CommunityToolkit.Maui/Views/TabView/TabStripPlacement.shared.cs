@@ -1,4 +1,4 @@
-﻿namespace CommunityToolkit.Maui.Views.TabView;
+﻿namespace CommunityToolkit.Maui.Views;
 
 public enum TabStripPlacement
 {
