@@ -73,24 +73,5 @@ public partial class TabViewItem : ContentView
 	/// </summary>
 	public TabViewItem()
 	{
-		ControlTemplate = ResolveControlTemplate();
-	}
-
-	public override ControlTemplate ResolveControlTemplate() => new DefaultTabViewItemTemplate();
-
-
-
-	internal sealed class DefaultTabViewItemTemplate : ControlTemplate
-	{
-		public DefaultTabViewItemTemplate() : base(() => CreateTemplate())
-		{
-
-		}
-
-		public static View CreateTemplate()
-		{
-			var label = new Label { Text = "TAB ITEM" };
-			return new Frame { Content = label };
-		}
 	}
 }

@@ -7,6 +7,8 @@ using System.Collections.Specialized;
 using Microsoft.Maui.Controls;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Maui.Sample.Helpers;
+using System.Globalization;
+using System.Reflection.Metadata;
 
 namespace CommunityToolkit.Maui.Views;
 /// <summary>
@@ -32,19 +34,18 @@ public partial class TabView : ContentView
 	}
 
 
-	public static readonly BindableProperty TabsProperty = BindableProperty.Create(nameof(Tabs), typeof(ObservableCollection<TabViewItem>), typeof(TabView),
-		defaultValueCreator: _ => new ObservableCollection<TabViewItem>());
+	public static readonly BindableProperty TabsProperty = BindableProperty.Create(nameof(Tabs), typeof(IList<TabViewItem>), typeof(TabView));
 	/// <summary>
 	/// Gets or sets the <see cref="TabViewItem"/> collection to be displayed
 	/// </summary>
-	public ObservableCollection<TabViewItem> Tabs
+	public IList<TabViewItem> Tabs
 	{
 		get => (ObservableCollection<TabViewItem>)GetValue(TabsProperty);
 		set => SetValue(TabsProperty, value);
 	}
 
 
-	public static readonly BindableProperty TabViewItemDataTemplateProperty = BindableProperty.Create(nameof(TabViewItemDataTemplate), typeof(DataTemplate), typeof(TabView), defaultValueCreator: _ => new TabViewItem.DefaultTabViewItemTemplate());
+	public static readonly BindableProperty TabViewItemDataTemplateProperty = BindableProperty.Create(nameof(TabViewItemDataTemplate), typeof(DataTemplate), typeof(TabView), defaultValue: new TabViewItemDataTemplate());
 	/// <summary>
 	/// Gets or sets the tab view item data template.
 	/// </summary>
@@ -124,7 +125,7 @@ public partial class TabView : ContentView
 		set => SetValue(TabContentBackgroundColorProperty, value);
 	}
 
-	public static readonly BindableProperty TabStripHeightProperty = BindableProperty.Create(nameof(TabStripHeight), typeof(double), typeof(TabView), default(double));
+	public static readonly BindableProperty TabStripHeightProperty = BindableProperty.Create(nameof(TabStripHeight), typeof(double), typeof(TabView), 70d);
 	/// <summary>
 	/// Gets or sets the tab strip height.
 	/// </summary>
@@ -184,7 +185,7 @@ public partial class TabView : ContentView
 		set => SetValue(TabIndicatorWidthProperty, value);
 	}
 
-	public static readonly BindableProperty TabIndicatorViewProperty = BindableProperty.Create(nameof(TabIndicatorView), typeof(View), typeof(TabView), null);
+	public static readonly BindableProperty TabIndicatorViewProperty = BindableProperty.Create(nameof(TabIndicatorView), typeof(View), typeof(TabView), default);
 	/// <summary>
 	/// Gets or sets the tab indicator view.
 	/// </summary>
@@ -243,16 +244,13 @@ public partial class TabView : ContentView
 
 	INotifyCollectionChanged? internalTabItemSource;
 
-	StackLayout TabContainer { get; } = CreateTabContainer();
+	CollectionView TabContainer { get; } = CreateTabContainer();
 
-	static StackLayout CreateTabContainer() => new()
+	static CollectionView CreateTabContainer() => new()
 	{
-		Orientation = StackOrientation.Horizontal,
+		ItemsLayout = new LinearItemsLayout(ItemsLayoutOrientation.Horizontal),
 		HorizontalOptions = LayoutOptions.Center,
 		VerticalOptions = LayoutOptions.Start,
-		Spacing = 10u,
-		MaximumHeightRequest = 200d,
-		MinimumHeightRequest = 20d,
 	};
 
 	Grid TabViewContainer { get; } = CreateTabViewContainer();
@@ -260,24 +258,19 @@ public partial class TabView : ContentView
 	static Grid CreateTabViewContainer() => new Grid
 	{
 		HorizontalOptions = LayoutOptions.Fill,
-		VerticalOptions = LayoutOptions.Fill
+		VerticalOptions = LayoutOptions.Center
 	};
-
-	RowDefinition endRowDef;
-	ColumnDefinition starColumnDef;
 
 	ScrollView TabContentContainer { get; } = CreateTabContentContainer();
 
-	static ScrollView CreateTabContentContainer()
+	static ScrollView CreateTabContentContainer() => new()
 	{
-		return new ScrollView()
-		{
-			HorizontalScrollBarVisibility = ScrollBarVisibility.Never,
-			VerticalOptions = LayoutOptions.Fill,
-			Orientation = ScrollOrientation.Horizontal,
-			Shadow = new Shadow()
-		};
-	}
+		BackgroundColor = Colors.Transparent,
+		HorizontalScrollBarVisibility = ScrollBarVisibility.Never,
+		VerticalOptions = LayoutOptions.Fill,
+		Orientation = ScrollOrientation.Horizontal,
+		Shadow = new Shadow()
+	};
 
 	enum GridColumn
 	{
@@ -297,31 +290,31 @@ public partial class TabView : ContentView
 	/// <summary>
 	/// Initializes a new instance of the <see cref="TabView"/> class.
 	/// </summary>
-	public TabView() : base()
+	public TabView()
 	{
 		Tabs = new ObservableCollection<TabViewItem>();
-		Tabs.CollectionChanged += OnTabsCollectionChanged;
 
+		((ObservableCollection<TabViewItem>)Tabs).CollectionChanged += OnTabsCollectionChanged;
 
-		endRowDef = new RowDefinition() { Height = GridLength.Star };
-		starColumnDef = new ColumnDefinition() { Width = GridLength.Star };
+		SelectedTabChanged += OnSelectedTabChanged;
 
+		TabContainer.BindingContext = this;
+		TabContainer.ItemTemplate = new TabViewItemDataTemplate();
+		TabContainer.SetBinding(CollectionView.ItemsSourceProperty, nameof(TabView.Tabs), BindingMode.TwoWay);
 
-		TabViewContainer.AddColumnDefinition(starColumnDef);
-		TabViewContainer.AddColumnDefinition(new() { Width = GridLength.Auto });
-		TabViewContainer.AddColumnDefinition(starColumnDef);
-		
-		TabViewContainer.AddRowDefinition(new() { Height = GridLength.Auto });
-		TabViewContainer.AddRowDefinition(endRowDef);
-
-		TabViewContainer.SetRow(TabContainer, (int)GridRow.TabItems);
-		TabViewContainer.SetRow(TabContentContainer, (int)GridRow.TabContent);
-
-		TabViewContainer.SetColumnSpan(TabContainer, (int)GridColumn.First | (int)GridColumn.Third);
-		TabViewContainer.SetColumnSpan(TabContentContainer, (int)GridColumn.First | (int)GridColumn.Third);
+		TabViewContainer.AddRowDefinition(new() { Height = TabStripHeight });
+		TabViewContainer.AddRowDefinition(new RowDefinition() { Height = GridLength.Star });
 
 		TabViewContainer.Children.Add(TabContainer);
-		TabViewContainer.Children.Add(TabContentContainer);
+
+		TabViewContainer.SetRow(TabContainer, Convert.ToInt32(GridRow.TabItems));
+		TabViewContainer.SetRow(TabContentContainer, Convert.ToInt32(GridRow.TabContent));
+
+		//TabViewContainer.SetColumnSpan(TabContainer, (int)GridColumn.First | (int)GridColumn.Third);
+		//TabViewContainer.SetColumnSpan(TabContentContainer, (int)GridColumn.First | (int)GridColumn.Third);
+		TabViewContainer.SetColumn(TabContainer, Convert.ToInt32(GridColumn.Second));
+		TabViewContainer.SetColumn(TabContentContainer, Convert.ToInt32(GridColumn.Second));
+
 
 
 		InitializeTabItems();
@@ -331,14 +324,14 @@ public partial class TabView : ContentView
 		Padding = new Thickness(0, 10, 0, 0);
 	}
 
+	void OnTabsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+	{
+		UpdateTabs();
+	}
+
 	protected override void OnBindingContextChanged()
 	{
 		base.OnBindingContextChanged();
-	}
-
-	protected virtual void OnTabsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
-	{
-		InitializeTabItems();
 	}
 
 	void OnTabItemsSourceCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -378,28 +371,28 @@ public partial class TabView : ContentView
 	{
 		View? result;
 
-		if (TabViewItemDataTemplate is DataTemplateSelector selector)
+		switch (TabViewItemDataTemplate)
 		{
-			var template = selector.SelectTemplate(tabModel, this);
-			result = template.CreateContent() as View;
-		}
-		else
-		{
-			result = tabModel switch
-			{
-				TabViewItem tabViewItem => tabViewItem,
-				_ => TabViewItemDataTemplate?.CreateContent() as View,
-			};
-		}
+			case DataTemplateSelector selector:
+				{
+					var template = selector.SelectTemplate(tabModel, this);
+					result = template.CreateContent() as View;
+					break;
+				}
 
-		if (result is not TabViewItem tabItemResult)
-		{
-			throw new InvalidOperationException($"The {nameof(TabViewItemDataTemplate)} should provide a content View which inherits from {nameof(TabViewItem)}");
+			default:
+				result = TabViewItemDataTemplate?.CreateContent() as View;
+				break;
 		}
 
-		tabItemResult.BindingContext = tabModel;
+		if (result is not TabViewItem resultTabViewItem)
+		{
+			throw new NullReferenceException($"The provided TabViewItemDataTemplate returned null when attempting to cast to View.");
+		}
 
-		return tabItemResult;
+		//resultTabViewItem.BindingContext = tabModel;
+
+		return resultTabViewItem;
 	}
 
 	protected override void OnPropertyChanged([CallerMemberName] string? propertyName = null)
@@ -410,6 +403,9 @@ public partial class TabView : ContentView
 		{
 			case nameof(TabItemsSource):
 				UpdateTabItemsSource();
+				break;
+			case nameof(Tabs):
+				UpdateTabs();
 				break;
 			default:
 				break;
@@ -434,18 +430,21 @@ public partial class TabView : ContentView
 
 	void InitializeTabItems()
 	{
-		foreach (var tab in Tabs)
+		var i = 0;
+		foreach (var tabModel in TabItemsSource ?? new object[0])
 		{
-			var tabContent = (View)tab.ControlTemplate.CreateContent();
-
-			TabContainer.Children.Add(tabContent);
+			var tab = CreateTabItem(tabModel);
+			Tabs.Insert(i++, tab);
 		}
+
+		UpdateTabs();
 	}
 
-
 	public virtual void OnSelectionChanged(object sender, TabSelectionChangedEventArgs args)
+	void UpdateTabs()
 	{
 		//TODO: Implement default OnSelectionChanged behavior
+
 	}
 
 	#region IDisposable Implementation
