@@ -4,8 +4,8 @@ namespace CommunityToolkit.Maui.Sample.Pages.Converters;
 
 public class ConvertersGalleryPage : BaseGalleryPage<ConvertersGalleryViewModel>
 {
-	public ConvertersGalleryPage(ConvertersGalleryViewModel viewModel)
-		: base("Converters", viewModel)
+	public ConvertersGalleryPage(IDeviceInfo deviceInfo, ConvertersGalleryViewModel convertersGalleryViewModel)
+		: base("Converters", deviceInfo, convertersGalleryViewModel)
 	{
 	}
 }

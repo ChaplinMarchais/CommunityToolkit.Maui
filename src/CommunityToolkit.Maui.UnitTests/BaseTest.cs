@@ -15,8 +15,6 @@ public abstract class BaseTest : IDisposable
 		defaultCulture = Thread.CurrentThread.CurrentCulture;
 		defaultUICulture = Thread.CurrentThread.CurrentUICulture;
 
-		Device.PlatformServices = new MockPlatformServices();
-
 		DispatcherProvider.SetCurrent(new MockDispatcherProvider());
 		DeviceDisplay.SetCurrent(null);
 	}
@@ -36,8 +34,6 @@ public abstract class BaseTest : IDisposable
 			return;
 		}
 
-		Device.PlatformServices = null;
-
 		Thread.CurrentThread.CurrentCulture = defaultCulture;
 		Thread.CurrentThread.CurrentUICulture = defaultUICulture;
 
@@ -47,11 +43,8 @@ public abstract class BaseTest : IDisposable
 		isDisposed = true;
 	}
 
-	protected static Task<Stream> GetStreamFromImageSource(ImageSource imageSource, CancellationToken token)
-	{
-		var streamImageSource = (StreamImageSource)imageSource;
-		return streamImageSource.Stream(token);
-	}
+	protected static Task<Stream> GetStreamFromImageSource(StreamImageSource imageSource, CancellationToken token)
+		=> imageSource.Stream(token);
 
 	protected static bool StreamEquals(Stream a, Stream b)
 	{

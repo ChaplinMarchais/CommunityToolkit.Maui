@@ -3,9 +3,10 @@ using CommunityToolkit.Maui.Sample.ViewModels.Behaviors;
 
 namespace CommunityToolkit.Maui.Sample.Pages.Behaviors;
 
-partial class MaxLengthReachedBehaviorPage : BasePage
+partial class MaxLengthReachedBehaviorPage : BasePage<MaxLengthReachedBehaviorViewModel>
 {
-	public MaxLengthReachedBehaviorPage()		: base()
+	public MaxLengthReachedBehaviorPage(IDeviceInfo deviceInfo, MaxLengthReachedBehaviorViewModel maxLengthReachedBehaviorViewModel)
+		: base(deviceInfo, maxLengthReachedBehaviorViewModel)
 	{
 		InitializeComponent();
 

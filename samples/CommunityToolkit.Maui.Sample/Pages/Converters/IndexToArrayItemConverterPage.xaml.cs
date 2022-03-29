@@ -2,9 +2,10 @@
 
 namespace CommunityToolkit.Maui.Sample.Pages.Converters;
 
-public partial class IndexToArrayItemConverterPage : BasePage
+public partial class IndexToArrayItemConverterPage : BasePage<IndexToArrayItemConverterViewModel>
 {
-	public IndexToArrayItemConverterPage()		: base()
+	public IndexToArrayItemConverterPage(IDeviceInfo deviceInfo, IndexToArrayItemConverterViewModel indexToArrayItemConverterViewModel)
+		: base(deviceInfo, indexToArrayItemConverterViewModel)
 	{
 		InitializeComponent();
 		Stepper ??= new();

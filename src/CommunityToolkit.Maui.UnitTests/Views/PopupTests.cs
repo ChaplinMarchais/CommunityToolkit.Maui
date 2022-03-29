@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.Maui.Core;
-using CommunityToolkit.Maui.Extensions;
 using CommunityToolkit.Maui.UnitTests.Mocks;
 using CommunityToolkit.Maui.Views;
 using Xunit;
@@ -193,4 +192,3 @@ public class PopupTests : BaseHandlerTest
 		public int MyProperty { get; set; }
 	}
 }
-

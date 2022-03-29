@@ -2,9 +2,10 @@
 
 namespace CommunityToolkit.Maui.Sample.Pages.Converters;
 
-public partial class EnumToIntConverterPage : BasePage
+public partial class EnumToIntConverterPage : BasePage<EnumToIntConverterViewModel>
 {
-	public EnumToIntConverterPage()		: base()
+	public EnumToIntConverterPage(IDeviceInfo deviceInfo, EnumToIntConverterViewModel enumToIntConverterViewModel)
+		: base(deviceInfo, enumToIntConverterViewModel)
 	{
 		InitializeComponent();
 	}

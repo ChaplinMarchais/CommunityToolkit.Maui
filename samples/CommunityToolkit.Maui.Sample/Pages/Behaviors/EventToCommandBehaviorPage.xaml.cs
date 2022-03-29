@@ -2,9 +2,10 @@
 
 namespace CommunityToolkit.Maui.Sample.Pages.Behaviors;
 
-public partial class EventToCommandBehaviorPage : BasePage
+public partial class EventToCommandBehaviorPage : BasePage<EventToCommandBehaviorViewModel>
 {
-	public EventToCommandBehaviorPage()		: base()
+	public EventToCommandBehaviorPage(IDeviceInfo deviceInfo, EventToCommandBehaviorViewModel eventToCommandBehaviorViewModel)
+		: base(deviceInfo, eventToCommandBehaviorViewModel)
 	{
 		InitializeComponent();
 	}
