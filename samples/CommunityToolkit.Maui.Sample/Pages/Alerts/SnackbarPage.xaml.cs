@@ -2,7 +2,9 @@
 using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Maui.Extensions;
+using CommunityToolkit.Maui.Markup;
 using CommunityToolkit.Maui.Sample.ViewModels.Alerts;
+using CommunityToolkit.Mvvm.Input;
 using Font = Microsoft.Maui.Font;
 
 namespace CommunityToolkit.Maui.Sample.Pages.Alerts;
@@ -18,12 +20,10 @@ public partial class SnackbarPage : BasePage<SnackbarViewModel>
 
 	ISnackbar? customSnackbar;
 
-	public SnackbarPage(IDeviceInfo deviceInfo, SnackbarViewModel snackbarViewModel) : base(deviceInfo, snackbarViewModel)
+	public SnackbarPage(SnackbarViewModel snackbarViewModel) : base(snackbarViewModel)
 	{
 		InitializeComponent();
 
-		SnackbarShownStatus ??= new();
-		DisplayCustomSnackbarButton ??= new();
 		DisplayCustomSnackbarButton.Text = displayCustomSnackbarText;
 
 		Snackbar.Shown += Snackbar_Shown;
@@ -50,7 +50,7 @@ public partial class SnackbarPage : BasePage<SnackbarViewModel>
 				"This is a customized Snackbar",
 				async () =>
 				{
-					await DisplayCustomSnackbarButton.BackgroundColorTo(colors[new Random().Next(colors.Count)], length: 500);
+					await DisplayCustomSnackbarButton.BackgroundColorTo(colors[Random.Shared.Next(colors.Count)], length: 500);
 					DisplayCustomSnackbarButton.Text = displayCustomSnackbarText;
 				},
 				"Change Button Color",
@@ -67,6 +67,7 @@ public partial class SnackbarPage : BasePage<SnackbarViewModel>
 			if (customSnackbar is not null)
 			{
 				await customSnackbar.Dismiss();
+				customSnackbar.Dispose();
 			}
 
 			DisplayCustomSnackbarButton.Text = displayCustomSnackbarText;
@@ -85,5 +86,34 @@ public partial class SnackbarPage : BasePage<SnackbarViewModel>
 	void Snackbar_Shown(object? sender, EventArgs e)
 	{
 		SnackbarShownStatus.Text = $"Snackbar shown. Snackbar.IsShown={Snackbar.IsShown}";
+	}
+
+	async void DisplaySnackbarInModalButtonClicked(object? sender, EventArgs e)
+	{
+		if (Application.Current?.MainPage is not null)
+		{
+			await Application.Current.MainPage.Navigation.PushModalAsync(new ContentPage
+			{
+				Content = new VerticalStackLayout
+				{
+					Spacing = 12,
+
+					Children =
+					{
+						new Button { Command = new AsyncRelayCommand(() => Snackbar.Make("Snackbar in a Modal Page").Show()) }
+							.Top().CenterHorizontal()
+							.Text("Display Snackbar"),
+
+						new Label()
+							.Center().TextCenter()
+							.Text("This is a Modal Page"),
+
+						new Button { Command = new AsyncRelayCommand(Application.Current.MainPage.Navigation.PopModalAsync) }
+							.Bottom().CenterHorizontal()
+							.Text("Back to Snackbar Page")
+					}
+				}.Center()
+			}.Padding(12));
+		}
 	}
 }

@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using CommunityToolkit.Maui.Core.Extensions;
 
 namespace CommunityToolkit.Maui.Converters;
@@ -9,7 +9,10 @@ namespace CommunityToolkit.Maui.Converters;
 public class ColorToByteAlphaConverter : BaseConverterOneWay<Color, byte>
 {
 	/// <inheritdoc/>
-	public override byte ConvertFrom(Color value, Type targetType, object? parameter, CultureInfo? culture)
+	public override byte DefaultConvertReturnValue { get; set; } = default;
+
+	/// <inheritdoc/>
+	public override byte ConvertFrom(Color value, CultureInfo? culture = null)
 	{
 		ArgumentNullException.ThrowIfNull(value);
 
@@ -23,7 +26,10 @@ public class ColorToByteAlphaConverter : BaseConverterOneWay<Color, byte>
 public class ColorToByteRedConverter : BaseConverterOneWay<Color, byte>
 {
 	/// <inheritdoc/>
-	public override byte ConvertFrom(Color value, Type targetType, object? parameter, CultureInfo? culture)
+	public override byte DefaultConvertReturnValue { get; set; } = default;
+
+	/// <inheritdoc/>
+	public override byte ConvertFrom(Color value, CultureInfo? culture = null)
 	{
 		ArgumentNullException.ThrowIfNull(value);
 
@@ -37,7 +43,10 @@ public class ColorToByteRedConverter : BaseConverterOneWay<Color, byte>
 public class ColorToByteGreenConverter : BaseConverterOneWay<Color, byte>
 {
 	/// <inheritdoc/>
-	public override byte ConvertFrom(Color value, Type targetType, object? parameter, CultureInfo? culture)
+	public override byte DefaultConvertReturnValue { get; set; } = default;
+
+	/// <inheritdoc/>
+	public override byte ConvertFrom(Color value, CultureInfo? culture = null)
 	{
 		ArgumentNullException.ThrowIfNull(value);
 
@@ -51,7 +60,10 @@ public class ColorToByteGreenConverter : BaseConverterOneWay<Color, byte>
 public class ColorToByteBlueConverter : BaseConverterOneWay<Color, byte>
 {
 	/// <inheritdoc/>
-	public override byte ConvertFrom(Color value, Type targetType, object? parameter, CultureInfo? culture)
+	public override byte DefaultConvertReturnValue { get; set; } = default;
+
+	/// <inheritdoc/>
+	public override byte ConvertFrom(Color value, CultureInfo? culture = null)
 	{
 		ArgumentNullException.ThrowIfNull(value);
 
@@ -65,7 +77,10 @@ public class ColorToByteBlueConverter : BaseConverterOneWay<Color, byte>
 public class ColorToPercentCyanConverter : BaseConverterOneWay<Color, double>
 {
 	/// <inheritdoc/>
-	public override double ConvertFrom(Color value, Type targetType, object? parameter, CultureInfo? culture)
+	public override double DefaultConvertReturnValue { get; set; } = 0.0d;
+
+	/// <inheritdoc/>
+	public override double ConvertFrom(Color value, CultureInfo? culture = null)
 	{
 		ArgumentNullException.ThrowIfNull(value);
 
@@ -79,7 +94,10 @@ public class ColorToPercentCyanConverter : BaseConverterOneWay<Color, double>
 public class ColorToPercentMagentaConverter : BaseConverterOneWay<Color, double>
 {
 	/// <inheritdoc/>
-	public override double ConvertFrom(Color value, Type targetType, object? parameter, CultureInfo? culture)
+	public override double DefaultConvertReturnValue { get; set; } = 0.0d;
+
+	/// <inheritdoc/>
+	public override double ConvertFrom(Color value, CultureInfo? culture = null)
 	{
 		ArgumentNullException.ThrowIfNull(value);
 
@@ -93,7 +111,10 @@ public class ColorToPercentMagentaConverter : BaseConverterOneWay<Color, double>
 public class ColorToPercentYellowConverter : BaseConverterOneWay<Color, double>
 {
 	/// <inheritdoc/>
-	public override double ConvertFrom(Color value, Type targetType, object? parameter, CultureInfo? culture)
+	public override double DefaultConvertReturnValue { get; set; } = 0.0d;
+
+	/// <inheritdoc/>
+	public override double ConvertFrom(Color value, CultureInfo? culture = null)
 	{
 		ArgumentNullException.ThrowIfNull(value);
 
@@ -104,10 +125,13 @@ public class ColorToPercentYellowConverter : BaseConverterOneWay<Color, double>
 /// <summary>
 /// Converts the incoming value from <see cref="Color"/> and returns the object of a type <see cref="double"/>.
 /// </summary>
-public class ColorToBlackKeyConverter : BaseConverterOneWay<Color, double>
+public class ColorToPercentBlackKeyConverter : BaseConverterOneWay<Color, double>
 {
 	/// <inheritdoc/>
-	public override double ConvertFrom(Color value, Type targetType, object? parameter, CultureInfo? culture)
+	public override double DefaultConvertReturnValue { get; set; } = 0.0d;
+
+	/// <inheritdoc/>
+	public override double ConvertFrom(Color value, CultureInfo? culture = null)
 	{
 		ArgumentNullException.ThrowIfNull(value);
 
@@ -122,7 +146,10 @@ public class ColorToBlackKeyConverter : BaseConverterOneWay<Color, double>
 public class ColorToDegreeHueConverter : BaseConverterOneWay<Color, double>
 {
 	/// <inheritdoc/>
-	public override double ConvertFrom(Color value, Type targetType, object? parameter, CultureInfo? culture)
+	public override double DefaultConvertReturnValue { get; set; } = 0.0d;
+
+	/// <inheritdoc/>
+	public override double ConvertFrom(Color value, CultureInfo? culture = null)
 	{
 		ArgumentNullException.ThrowIfNull(value);
 

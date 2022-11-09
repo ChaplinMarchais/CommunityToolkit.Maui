@@ -14,17 +14,10 @@ public partial class ColorAnimationExtensionsPage : BasePage<ColorAnimationExten
 		.GetFields(BindingFlags.Static | BindingFlags.Public)
 		.ToDictionary(c => c.Name, c => (Easing)(c.GetValue(null) ?? throw new InvalidOperationException()));
 
-	public ColorAnimationExtensionsPage(IDeviceInfo deviceInfo, ColorAnimationExtensionsViewModel colorAnimationExtensionsViewModel)
-		: base(deviceInfo, colorAnimationExtensionsViewModel)
+	public ColorAnimationExtensionsPage(ColorAnimationExtensionsViewModel colorAnimationExtensionsViewModel)
+		: base(colorAnimationExtensionsViewModel)
 	{
 		InitializeComponent();
-
-		RateInput ??= new();
-		ColorFrame ??= new();
-		ColorPicker ??= new();
-		EasingPicker ??= new();
-		DurationInput ??= new();
-		TextColorToDescriptionLabel ??= new();
 	}
 
 	protected override void OnAppearing()
@@ -36,8 +29,8 @@ public partial class ColorAnimationExtensionsPage : BasePage<ColorAnimationExten
 
 	void SetPickersRandomValue()
 	{
-		ColorPicker.SelectedIndex = new Random().Next(ColorPicker.ItemsSource.Count);
-		EasingPicker.SelectedIndex = new Random().Next(EasingPicker.ItemsSource.Count);
+		ColorPicker.SelectedIndex = Random.Shared.Next(ColorPicker.ItemsSource.Count);
+		EasingPicker.SelectedIndex = Random.Shared.Next(EasingPicker.ItemsSource.Count);
 	}
 
 	async void Button_Clicked(object sender, EventArgs e)

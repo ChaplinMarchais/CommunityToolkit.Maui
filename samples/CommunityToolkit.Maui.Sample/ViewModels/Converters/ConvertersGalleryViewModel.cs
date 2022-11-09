@@ -48,7 +48,7 @@ public class ConvertersGalleryViewModel : BaseGalleryViewModel
 				"A converter that allows users to convert the casing of an incoming string type binding. The Type property is used to define what kind of casing will be applied to the string."),
 
 			SectionModel.Create<MultiConverterViewModel>(nameof(MultiConverter),
-				"This sample demonstrates how to use Multibinding Converter"),
+				"This sample demonstrates how to use MultiBinding Converter"),
 
 			SectionModel.Create<DateTimeOffsetConverterViewModel>(nameof(DateTimeOffsetConverter),
 				"A converter that allows to convert from a DateTimeOffset type to a DateTime type"),
@@ -77,6 +77,9 @@ public class ConvertersGalleryViewModel : BaseGalleryViewModel
 			SectionModel.Create<MathExpressionConverterViewModel>(nameof(MathExpressionConverter),
 				"A converter that allows users to calculate an expression at runtime."),
 
+			SectionModel.Create<MultiMathExpressionConverterViewModel>(nameof(MultiMathExpressionConverter),
+				"A converter that allows users to calculate multiple math expressions at runtime."),
+
 			SectionModel.Create<StringToListConverterViewModel>(nameof(StringToListConverter),
 				"A converter that splits a string by the separator and returns the enumerable sequence of strings as the result."),
 
@@ -90,7 +93,17 @@ public class ConvertersGalleryViewModel : BaseGalleryViewModel
 				"A converter that compares two IComparable objects and returns a boolean value or one of two specified objects."),
 
 			SectionModel.Create<ByteArrayToImageSourceConverterViewModel>(nameof(ByteArrayToImageSourceConverter),
-				"A converter that allows the user to convert an incoming value from byte array and returns an object of type ImageSource. This object can then be used as the Source of an Image control..")
+				"A converter that allows the user to convert an incoming value from byte array and returns an object of type ImageSource. This object can then be used as the Source of an Image control.."),
+
+			SectionModel.Create<StateToBooleanConverterViewModel>(nameof(StateToBooleanConverter),
+				"A converter that allows the user to convert a LayoutState enum to a boolean value."),
+
+			SectionModel.Create<IsNotNullConverterViewModel>(nameof(IsNotNullConverter),
+				"A converter that allows users to convert an incoming object? to a bool."),
+
+
+			SectionModel.Create<IsNullConverterViewModel>(nameof(IsNullConverter),
+				"A converter that allows users to convert an incoming object? to a bool."),
 		})
 	{
 	}

@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Handlers;
-using UIKit;
 
 namespace CommunityToolkit.Maui.Core.Views;
 
@@ -45,8 +45,18 @@ public class MauiPopup : UIViewController
 	{
 		base.ViewDidLayoutSubviews();
 
-		_ = View ?? throw new InvalidOperationException($"{nameof(View)} cannot be null");
+		_ = View ?? throw new InvalidOperationException($"{nameof(View)} cannot be null.");
 		SetElementSize(new Size(View.Bounds.Width, View.Bounds.Height));
+	}
+
+	/// <inheritdoc/>
+	public override void ViewWillDisappear(bool animated)
+	{
+		if (ViewController?.View is UIView view)
+		{
+			view.Alpha = 1f;
+		}
+		base.ViewWillDisappear(animated);
 	}
 
 	/// <summary>
@@ -58,16 +68,26 @@ public class MauiPopup : UIViewController
 	{
 		if (element.Parent?.Handler is not PageHandler mainPage)
 		{
-			throw new InvalidOperationException($"The {nameof(element.Parent)} must be of type {typeof(PageHandler)}");
+			throw new InvalidOperationException($"The {nameof(element.Parent)} must be of type {typeof(PageHandler)}.");
 		}
 
 		VirtualView = element;
 		ModalPresentationStyle = UIModalPresentationStyle.Popover;
 
-		_ = View ?? throw new InvalidOperationException($"{nameof(View)} cannot be null");
+		_ = View ?? throw new InvalidOperationException($"{nameof(View)} cannot be null.");
 		_ = VirtualView ?? throw new InvalidOperationException($"{nameof(VirtualView)} cannot be null.");
 
-		ViewController ??= mainPage.ViewController ?? throw new InvalidOperationException($"{nameof(mainPage.ViewController)} cannot be null"); ;
+		var rootViewController = WindowStateManager.Default.GetCurrentUIViewController() ?? throw new InvalidOperationException($"{nameof(mainPage.ViewController)} cannot be null.");
+		ViewController ??= rootViewController;
+		SetDimmingBackgroundEffect();
+	}
+
+	void SetDimmingBackgroundEffect()
+	{
+		if (ViewController?.View is UIView view)
+		{
+			view.Alpha = 0.4f;
+		}
 	}
 
 	/// <summary>
@@ -101,10 +121,10 @@ public class MauiPopup : UIViewController
 
 		SetPresentationController();
 
-		_ = View ?? throw new InvalidOperationException($"{nameof(View)} cannot be null");
+		_ = View ?? throw new InvalidOperationException($"{nameof(View)} cannot be null.");
 		SetView(View, Control);
 
-		_ = ViewController ?? throw new InvalidOperationException($"{nameof(ViewController)} cannot be null");
+		_ = ViewController ?? throw new InvalidOperationException($"{nameof(ViewController)} cannot be null.");
 		AddToCurrentPageViewController(ViewController);
 
 		this.SetLayout(virtualView);
@@ -112,25 +132,31 @@ public class MauiPopup : UIViewController
 
 	void SetView(UIView view, PageHandler control)
 	{
-		view.AddSubview(control.ViewController?.View ?? throw new InvalidOperationException($"{nameof(control.ViewController.View)} cannot be null"));
+		view.AddSubview(control.ViewController?.View ?? throw new InvalidOperationException($"{nameof(control.ViewController.View)} cannot be null."));
 		view.Bounds = new(0, 0, PreferredContentSize.Width, PreferredContentSize.Height);
 		AddChildViewController(control.ViewController);
+
+		if (VirtualView is not null)
+		{
+			this.SetBackgroundColor(VirtualView);
+		}
 	}
 
 	void SetPresentationController()
 	{
 		var popOverDelegate = new PopoverDelegate();
 		popOverDelegate.PopoverDismissedEvent += HandlePopoverDelegateDismissed;
-		((UIPopoverPresentationController)PresentationController).SourceView = ViewController?.View ?? throw new InvalidOperationException($"{nameof(ViewController.View)} cannot be null");
 
-		((UIPopoverPresentationController)PresentationController).Delegate = popOverDelegate;
+		UIPopoverPresentationController presentationController = (UIPopoverPresentationController)(PresentationController ?? throw new InvalidOperationException($"{nameof(PresentationController)} cannot be null."));
+		presentationController.SourceView = ViewController?.View ?? throw new InvalidOperationException($"{nameof(ViewController.View)} cannot be null.");
+
+		presentationController.Delegate = popOverDelegate;
 	}
 
-
+	[MemberNotNull(nameof(VirtualView))]
 	void HandlePopoverDelegateDismissed(object? sender, UIPresentationController e)
 	{
 		_ = VirtualView ?? throw new InvalidOperationException($"{nameof(VirtualView)} cannot be null.");
-
 		VirtualView.Handler?.Invoke(nameof(IPopup.OnDismissedByTappingOutsideOfPopup));
 	}
 
@@ -141,12 +167,18 @@ public class MauiPopup : UIViewController
 
 	sealed class PopoverDelegate : UIPopoverPresentationControllerDelegate
 	{
-		public event EventHandler<UIPresentationController>? PopoverDismissedEvent;
+		readonly WeakEventManager popoverDismissedEventmanager = new();
+
+		public event EventHandler<UIPresentationController> PopoverDismissedEvent
+		{
+			add => popoverDismissedEventmanager.AddEventHandler(value);
+			remove => popoverDismissedEventmanager.RemoveEventHandler(value);
+		}
 
 		public override UIModalPresentationStyle GetAdaptivePresentationStyle(UIPresentationController forPresentationController) =>
 			UIModalPresentationStyle.None;
 
 		public override void DidDismiss(UIPresentationController presentationController) =>
-			PopoverDismissedEvent?.Invoke(this, presentationController);
+			popoverDismissedEventmanager.HandleEvent(this, presentationController, nameof(PopoverDismissedEvent));
 	}
 }

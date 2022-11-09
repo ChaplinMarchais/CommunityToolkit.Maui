@@ -97,7 +97,7 @@ public class CharactersValidationBehavior : TextValidationBehavior
 
 	/// <inheritdoc/>
 	protected override async ValueTask<bool> ValidateAsync(string? value, CancellationToken token)
-		=> await base.ValidateAsync(value, token).ConfigureAwait(false) && Validate(value?.ToString());
+		=> await base.ValidateAsync(value, token).ConfigureAwait(false) && Validate(value);
 
 	static void OnCharacterTypePropertyChanged(BindableObject bindable, object oldValue, object newValue)
 	{
@@ -134,12 +134,12 @@ public class CharactersValidationBehavior : TextValidationBehavior
 
 		if (characterType.HasFlag(CharacterType.LowercaseLatinLetter))
 		{
-			yield return c => c >= 'a' && c <= 'z';
+			yield return c => c is >= 'a' and <= 'z';
 		}
 
 		if (characterType.HasFlag(CharacterType.UppercaseLatinLetter))
 		{
-			yield return c => c >= 'A' && c <= 'Z';
+			yield return c => c is >= 'A' and <= 'Z';
 		}
 	}
 

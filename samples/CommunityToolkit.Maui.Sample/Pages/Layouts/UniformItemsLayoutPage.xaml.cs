@@ -10,50 +10,36 @@ public partial class UniformItemsLayoutPage : BasePage<UniformItemsLayoutViewMod
 											.ToDictionary(c => c.Name, c => (Color)(c.GetValue(null) ?? throw new InvalidOperationException()))
 											.Values.ToList();
 
-	public UniformItemsLayoutPage(IDeviceInfo deviceInfo, UniformItemsLayoutViewModel uniformItemsLayoutViewModel)
-		: base(deviceInfo, uniformItemsLayoutViewModel)
+	public UniformItemsLayoutPage(UniformItemsLayoutViewModel uniformItemsLayoutViewModel)
+		: base(uniformItemsLayoutViewModel)
 	{
 		InitializeComponent();
-		UniformItemsLayout_Default ??= new();
-		UniformItemsLayout_MaxColumns1 ??= new();
-		UniformItemsLayout_MaxRows1 ??= new();
-		UniformItemsLayout_MaxRows2MaxColumns2 ??= new();
 	}
 
 	void HandleAddButtonClicked(object? sender, System.EventArgs e)
 	{
-		const int widthRequest = 25;
-		const int heightRequest = 25;
-		var randomColor = colors[new Random().Next(colors.Count)];
+		var randomColor = colors[Random.Shared.Next(colors.Count)];
 
-		UniformItemsLayout_Default.Children.Add(new BoxView
+		UniformItemsLayout_Default.Children.Add(new Button
 		{
-			HeightRequest = widthRequest,
-			WidthRequest = heightRequest,
-			Color = randomColor
+			BackgroundColor = randomColor
 		});
 
-		UniformItemsLayout_MaxRows1.Children.Add(new BoxView
+		UniformItemsLayout_MaxRows1.Children.Add(new Button
 		{
-			HeightRequest = widthRequest,
-			WidthRequest = heightRequest,
-			Color = randomColor
+			BackgroundColor = randomColor
 		});
 
-		UniformItemsLayout_MaxColumns1.Children.Add(new BoxView
+		UniformItemsLayout_MaxColumns1.Children.Add(new Button
 		{
-			HeightRequest = widthRequest,
-			WidthRequest = heightRequest,
-			Color = randomColor
+			BackgroundColor = randomColor
 		});
 
-		var boxView = new BoxView
+		var button = new Button
 		{
-			HeightRequest = widthRequest,
-			WidthRequest = heightRequest,
-			Color = randomColor
+			BackgroundColor = randomColor
 		};
 
-		UniformItemsLayout_MaxRows2MaxColumns2.Children.Add(boxView);
+		UniformItemsLayout_MaxRows2MaxColumns2.Children.Add(button);
 	}
 }

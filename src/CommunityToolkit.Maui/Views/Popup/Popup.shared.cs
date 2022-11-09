@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Maui.Core;
+using Microsoft.Maui.Controls.Internals;
 using LayoutAlignment = Microsoft.Maui.Primitives.LayoutAlignment;
 
 namespace CommunityToolkit.Maui.Views;
@@ -7,7 +8,7 @@ namespace CommunityToolkit.Maui.Views;
 /// Represents a small View that pops up at front the Page. Implements <see cref="IPopup"/>.
 /// </summary>
 [ContentProperty(nameof(Content))]
-public partial class Popup : Element, IPopup
+public partial class Popup : Element, IPopup, IWindowController, IPropertyPropagationController
 {
 	/// <summary>
 	///  Backing BindableProperty for the <see cref="Content"/> property.
@@ -17,7 +18,7 @@ public partial class Popup : Element, IPopup
 	/// <summary>
 	///  Backing BindableProperty for the <see cref="Color"/> property.
 	/// </summary>
-	public static readonly BindableProperty ColorProperty = BindableProperty.Create(nameof(Color), typeof(Color), typeof(Popup), Colors.LightGray);
+	public static readonly BindableProperty ColorProperty = BindableProperty.Create(nameof(Color), typeof(Color), typeof(Popup), Colors.LightGray, propertyChanged: OnColorChanged);
 
 	/// <summary>
 	///  Backing BindableProperty for the <see cref="Size"/> property.
@@ -44,6 +45,7 @@ public partial class Popup : Element, IPopup
 	readonly Lazy<PlatformConfigurationRegistry<Popup>> platformConfigurationRegistry;
 
 	TaskCompletionSource<object?> taskCompletionSource = new();
+	Window? window;
 
 	/// <summary>
 	/// Instantiates a new instance of <see cref="Popup"/>.
@@ -53,7 +55,6 @@ public partial class Popup : Element, IPopup
 		platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<Popup>>(() => new(this));
 
 		VerticalOptions = HorizontalOptions = LayoutAlignment.Center;
-
 #if WINDOWS
 		this.HandlerChanged += OnPopupHandlerChanged;
 #endif
@@ -131,7 +132,7 @@ public partial class Popup : Element, IPopup
 	/// <remarks>
 	/// The Popup will always try to constrain the actual size of the <see cref="Popup" />
 	/// to the <see cref="Popup" /> of the View unless a <see cref="Size"/> is specified.
-	/// If the <see cref="Popup" /> contiains <see cref="LayoutOptions"/> a <see cref="Size"/>
+	/// If the <see cref="Popup" /> contains <see cref="LayoutOptions"/> a <see cref="Size"/>
 	/// will be required. This will allow the View to have a concept of <see cref="Size"/>
 	/// that varies from the actual <see cref="Size"/> of the <see cref="Popup" />
 	/// </remarks>
@@ -164,6 +165,23 @@ public partial class Popup : Element, IPopup
 	public View? Anchor { get; set; }
 
 	/// <summary>
+	/// Property that represents the Window that's showing the Popup.
+	/// </summary>
+	public Window? Window
+	{
+		get => window;
+		set
+		{
+			window = value;
+
+			if (Content is IWindowController controller)
+			{
+				controller.Window = value;
+			}
+		}
+	}
+
+	/// <summary>
 	/// Gets or sets the result that will return when user taps outside of the Popup.
 	/// </summary>
 	protected object? ResultWhenUserTapsOutsideOfPopup { get; set; }
@@ -173,6 +191,7 @@ public partial class Popup : Element, IPopup
 
 	/// <inheritdoc/>
 	IView? IPopup.Content => Content;
+
 
 	/// <summary>
 	/// Resets the Popup.
@@ -231,6 +250,7 @@ public partial class Popup : Element, IPopup
 		if (Content is not null)
 		{
 			SetInheritedBindingContext(Content, BindingContext);
+			Content.Parent = this;
 		}
 	}
 
@@ -240,9 +260,22 @@ public partial class Popup : Element, IPopup
 		popup.OnBindingContextChanged();
 	}
 
+	static void OnColorChanged(BindableObject bindable, object oldValue, object newValue)
+	{
+		ArgumentNullException.ThrowIfNull(newValue);
+	}
+
 	void IPopup.OnClosed(object? result) => Handler.Invoke(nameof(IPopup.OnClosed), result);
 
 	void IPopup.OnOpened() => OnOpened();
 
 	void IPopup.OnDismissedByTappingOutsideOfPopup() => OnDismissedByTappingOutsideOfPopup();
+
+	void IPropertyPropagationController.PropagatePropertyChanged(string propertyName) =>
+		PropertyPropagationExtensions.PropagatePropertyChanged(propertyName, this, ((IVisualTreeElement)this).GetVisualChildren());
+
+	IReadOnlyList<IVisualTreeElement> IVisualTreeElement.GetVisualChildren() =>
+		Content is null
+			? Enumerable.Empty<IVisualTreeElement>().ToList()
+			: new List<IVisualTreeElement> { Content };
 }

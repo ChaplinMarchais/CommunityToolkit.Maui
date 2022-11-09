@@ -2,8 +2,8 @@
 <pages:BasePage 
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:mct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:pages="clr-namespace:CommunityToolkit.Maui.Sample.Pages"
-    xmlns:mct="clr-namespace:CommunityToolkit.Maui.Layouts;assembly=CommunityToolkit.Maui"
     xmlns:layouts="clr-namespace:CommunityToolkit.Maui.Sample.ViewModels.Layouts"
     x:Class="CommunityToolkit.Maui.Sample.Pages.Layouts.UniformItemsLayoutPage"
     x:TypeArguments="layouts:UniformItemsLayoutViewModel"
@@ -18,34 +18,66 @@
 
             <Label Text="UniformItemsLayout with default settings"/>
             <mct:UniformItemsLayout x:Name="UniformItemsLayout_Default">
-                <BoxView BackgroundColor="Black" HeightRequest="25" WidthRequest="25"/>
-                <BoxView BackgroundColor="Green" HeightRequest="25" WidthRequest="25"/>
-                <BoxView BackgroundColor="Purple" HeightRequest="25" WidthRequest="25"/>
-                <BoxView BackgroundColor="Orange" HeightRequest="25" WidthRequest="25"/>
+                <Button BackgroundColor="Red" />
+                <Button BackgroundColor="Green" />
+                <Button BackgroundColor="Blue" />
+                <Button BackgroundColor="Yellow" />
             </mct:UniformItemsLayout>
 
             <Label Text="UniformItemsLayout with MaxColumns=2 and MaxRows=2"/>
             <mct:UniformItemsLayout x:Name="UniformItemsLayout_MaxRows2MaxColumns2" MaxColumns="2" MaxRows="2">
-                <BoxView BackgroundColor="Black" HeightRequest="25" WidthRequest="25"/>
-                <BoxView BackgroundColor="Green" HeightRequest="25" WidthRequest="25"/>
-                <BoxView BackgroundColor="Purple" HeightRequest="25" WidthRequest="25"/>
-                <BoxView BackgroundColor="Orange" HeightRequest="25" WidthRequest="25"/>
+                <Button BackgroundColor="Red" />
+                <Button BackgroundColor="Green" />
+                <Button BackgroundColor="Blue" />
+                <Button BackgroundColor="Yellow" />
             </mct:UniformItemsLayout>
 
             <Label Text="UniformItemsLayout with MaxRows=1"/>
             <mct:UniformItemsLayout x:Name="UniformItemsLayout_MaxRows1" MaxRows="1">
-                <BoxView BackgroundColor="Black" HeightRequest="25" WidthRequest="25"/>
-                <BoxView BackgroundColor="Green" HeightRequest="25" WidthRequest="25"/>
-                <BoxView BackgroundColor="Purple" HeightRequest="25" WidthRequest="25"/>
-                <BoxView BackgroundColor="Orange" HeightRequest="25" WidthRequest="25"/>
+                <Button BackgroundColor="Red" />
+                <Button BackgroundColor="Green" />
+                <Button BackgroundColor="Blue" />
+                <Button BackgroundColor="Yellow" />
             </mct:UniformItemsLayout>
 
             <Label Text="UniformItemsLayout with MaxColumns=1"/>
             <mct:UniformItemsLayout x:Name="UniformItemsLayout_MaxColumns1" MaxColumns="1">
-                <BoxView BackgroundColor="Black" HeightRequest="25" WidthRequest="25"/>
-                <BoxView BackgroundColor="Green" HeightRequest="25" WidthRequest="25"/>
-                <BoxView BackgroundColor="Purple" HeightRequest="25" WidthRequest="25"/>
-                <BoxView BackgroundColor="Orange" HeightRequest="25" WidthRequest="25"/>
+                <Button BackgroundColor="Red" />
+                <Button BackgroundColor="Green" />
+                <Button BackgroundColor="Blue" />
+                <Button BackgroundColor="Yellow" />
+            </mct:UniformItemsLayout>
+
+            <Label Text="UniformItemsLayout with Padding"/>
+            <mct:UniformItemsLayout Padding="50" Background="Blue">
+                <Button BackgroundColor="Red" />
+                <Button BackgroundColor="Green" />
+                <Button BackgroundColor="Blue" />
+                <Button BackgroundColor="Yellow" />
+                <Button BackgroundColor="Gray" />
+                <Button BackgroundColor="Black" />
+                <Button BackgroundColor="White" />
+                <Button BackgroundColor="Pink" />
+                <Button BackgroundColor="Brown" />
+                <Button BackgroundColor="Purple" />
+                <Button BackgroundColor="SkyBlue" />
+                <Button BackgroundColor="Orange" />
+            </mct:UniformItemsLayout>
+
+            <Label Text="UniformItemsLayout with Margin"/>
+            <mct:UniformItemsLayout Margin="20" Background="Blue">
+                <Button BackgroundColor="Red" />
+                <Button BackgroundColor="Green" />
+                <Button BackgroundColor="Blue" />
+                <Button BackgroundColor="Yellow" />
+                <Button BackgroundColor="Gray" />
+                <Button BackgroundColor="Black" />
+                <Button BackgroundColor="White" />
+                <Button BackgroundColor="Pink" />
+                <Button BackgroundColor="Brown" />
+                <Button BackgroundColor="Purple" />
+                <Button BackgroundColor="SkyBlue" />
+                <Button BackgroundColor="Orange" />
             </mct:UniformItemsLayout>
         </VerticalStackLayout>
     </ScrollView>

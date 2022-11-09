@@ -27,7 +27,10 @@ public class RequiredStringValidationBehavior : ValidationBehavior<string>
 	}
 
 	/// <summary>
-	/// Equals comapre or contains. Equals by default. This is a bindable property.
+	/// Get or sets whether the entered text must match the whole contents of the <see cref="RequiredString"/> property
+	/// or simply contain the <see cref="RequiredString"/> property value.
+	/// <br/>
+	/// <c>true</c> by default. This is a bindable property.
 	/// </summary>
 	public bool ExactMatch
 	{
@@ -38,10 +41,12 @@ public class RequiredStringValidationBehavior : ValidationBehavior<string>
 	/// <inheritdoc/>
 	protected override ValueTask<bool> ValidateAsync(string? value, CancellationToken token)
 	{
+#pragma warning disable CA1309 // Use ordinal string comparison - It is an entirely valid use case to use the current culture when validating what the user has entered.
 		return new ValueTask<bool>(ExactMatch switch
 		{
-			true => value?.ToString() == RequiredString,
-			false => value?.ToString()?.Contains(RequiredString ?? string.Empty) ?? false
+			true => string.Equals(value, RequiredString, StringComparison.CurrentCulture),
+			false => value?.Contains(RequiredString ?? string.Empty, StringComparison.CurrentCulture) ?? false
 		});
+#pragma warning restore CA1309 // Use ordinal string comparison
 	}
 }

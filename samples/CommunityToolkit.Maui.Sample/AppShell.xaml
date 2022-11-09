@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+﻿<?xml version="1.0" encoding="UTF-8" ?>
 
 <Shell x:Class="CommunityToolkit.Maui.Sample.AppShell"
        xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
@@ -7,10 +7,12 @@
        xmlns:behaviors="clr-namespace:CommunityToolkit.Maui.Sample.Pages.Behaviors"
        xmlns:converters="clr-namespace:CommunityToolkit.Maui.Sample.Pages.Converters"
        xmlns:extensions="clr-namespace:CommunityToolkit.Maui.Sample.Pages.Extensions"
+       xmlns:imagesources="clr-namespace:CommunityToolkit.Maui.Sample.Pages.ImageSources"
        xmlns:layouts="clr-namespace:CommunityToolkit.Maui.Sample.Pages.Layouts"
-       xmlns:pages="clr-namespace:CommunityToolkit.Maui.Sample.Pages"
        xmlns:views="clr-namespace:CommunityToolkit.Maui.Sample.Pages.Views"
-       xmlns:sys="clr-namespace:System;assembly=netstandard">
+       xmlns:pages="clr-namespace:CommunityToolkit.Maui.Sample.Pages"
+       xmlns:sys="clr-namespace:System;assembly=netstandard"
+       Padding="4,0,0,0">
 
     <Shell.FlyoutHeader>
         <Label Margin="{OnPlatform Default='0,0,0,12',
@@ -54,6 +56,12 @@
                 Route="ExtensionsGalleryPage"
                 Icon="{OnPlatform Default='dotnet_bot.png', MacCatalyst=''}">
         <ShellContent ContentTemplate="{DataTemplate extensions:ExtensionsGalleryPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="ImageSources"
+                Route="ImageSourcesGalleryPage"
+                Icon="{OnPlatform Default='dotnet_bot.png', MacCatalyst=''}">
+        <ShellContent ContentTemplate="{DataTemplate imagesources:ImageSourcesGalleryPage}" />
     </FlyoutItem>
 
     <FlyoutItem Title="Layouts"

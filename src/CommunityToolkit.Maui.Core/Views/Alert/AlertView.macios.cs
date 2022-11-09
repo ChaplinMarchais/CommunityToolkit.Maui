@@ -1,7 +1,6 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using CommunityToolkit.Maui.Core.Extensions;
 using CommunityToolkit.Maui.Core.Primitives;
-using UIKit;
 
 namespace CommunityToolkit.Maui.Core.Views;
 
@@ -10,16 +9,15 @@ namespace CommunityToolkit.Maui.Core.Views;
 /// </summary>
 public class AlertView : UIView
 {
-	readonly List<UIView> children = Array.Empty<UIView>().ToList();
+	readonly List<UIView> children = Enumerable.Empty<UIView>().ToList();
 
 	/// <summary>
 	/// Parent UIView
 	/// </summary>
-	public UIView ParentView => UIApplication.SharedApplication.ConnectedScenes.ToArray()
-		.Where(x => x.ActivationState == UISceneActivationState.ForegroundActive)
-		.Select(x => x as UIWindowScene)
-		.FirstOrDefault()?
-		.Windows.FirstOrDefault(x => x.IsKeyWindow) ?? throw new InvalidOperationException("KeyWindow is not found");
+	public static UIView ParentView => UIApplication.SharedApplication.ConnectedScenes.ToArray()
+										.Select(x => x as UIWindowScene)
+										.FirstOrDefault()?
+										.Windows.FirstOrDefault(x => x.IsKeyWindow) ?? throw new InvalidOperationException("KeyWindow is not found");
 
 	/// <summary>
 	/// PopupView Children
@@ -97,20 +95,18 @@ public class AlertView : UIView
 			VisualOptions.CornerRadius.Height)
 		{
 			Alignment = UIStackViewAlignment.Fill,
-			Distribution = UIStackViewDistribution.EqualCentering
+			Distribution = UIStackViewDistribution.EqualSpacing,
+			Axis = UILayoutConstraintAxis.Horizontal,
+			BackgroundColor = VisualOptions.BackgroundColor,
+			TranslatesAutoresizingMaskIntoConstraints = false
 		};
-
-		AddSubview(Container);
-
-		Container.Axis = UILayoutConstraintAxis.Horizontal;
-		Container.TranslatesAutoresizingMaskIntoConstraints = false;
-		Container.BackgroundColor = VisualOptions.BackgroundColor;
-
-		TranslatesAutoresizingMaskIntoConstraints = false;
 
 		foreach (var view in Children)
 		{
 			Container.AddArrangedSubview(view);
 		}
+
+		TranslatesAutoresizingMaskIntoConstraints = false;
+		AddSubview(Container);
 	}
 }

@@ -1,27 +1,53 @@
 ﻿using System.ComponentModel;
 using CommunityToolkit.Maui.Core;
-using Microsoft.Maui.Dispatching;
-#if ANDROID
-using NativeToast = Android.Widget.Toast;
-#elif IOS || MACCATALYST
-using NativeToast = CommunityToolkit.Maui.Core.Views.ToastView;
-#elif WINDOWS
-using NativeToast = Windows.UI.Notifications.ToastNotification;
-#endif
 
 namespace CommunityToolkit.Maui.Alerts;
 
 /// <inheritdoc/>
 public partial class Toast : IToast
 {
-	/// <inheritdoc/>
-	public string Text { get; init; } = string.Empty;
+	bool isDisposed;
+
+	string text = string.Empty;
+	ToastDuration duration = ToastDuration.Short;
+	double textSize = AlertDefaults.FontSize;
 
 	/// <inheritdoc/>
-	public ToastDuration Duration { get; init; } = ToastDuration.Short;
+	public string Text
+	{
+		get => text;
+		init => text = value ?? throw new ArgumentNullException(nameof(value));
+	}
 
 	/// <inheritdoc/>
-	public double TextSize { get; init; } = Defaults.FontSize;
+	public ToastDuration Duration
+	{
+		get => duration;
+		init
+		{
+			if (!Enum.IsDefined(typeof(ToastDuration), value))
+			{
+				throw new InvalidEnumArgumentException(nameof(value), (int)value, typeof(ToastDuration));
+			}
+
+			duration = value;
+		}
+	}
+
+	/// <inheritdoc/>
+	public double TextSize
+	{
+		get => textSize;
+		init
+		{
+			if (value <= 0)
+			{
+				throw new ArgumentOutOfRangeException(nameof(value), "Toast font size must be positive");
+			}
+
+			textSize = value;
+		}
+	}
 
 	/// <summary>
 	/// Create new Toast
@@ -33,20 +59,8 @@ public partial class Toast : IToast
 	public static IToast Make(
 		string message,
 		ToastDuration duration = ToastDuration.Short,
-		double textSize = Defaults.FontSize)
+		double textSize = AlertDefaults.FontSize)
 	{
-		ArgumentNullException.ThrowIfNull(message);
-
-		if (!Enum.IsDefined(typeof(ToastDuration), duration))
-		{
-			throw new InvalidEnumArgumentException(nameof(duration), (int)duration, typeof(ToastDuration));
-		}
-
-		if (textSize <= 0)
-		{
-			throw new ArgumentOutOfRangeException(nameof(textSize), "Toast font size must be positive");
-		}
-
 		return new Toast
 		{
 			Text = message,
@@ -58,92 +72,34 @@ public partial class Toast : IToast
 	/// <summary>
 	/// Show Toast
 	/// </summary>
-	public virtual Task Show(CancellationToken token = default) => Dispatcher.GetForCurrentThread().DispatchIfRequiredAsync(() => ShowNative(token));
+	public virtual Task Show(CancellationToken token = default)
+	{
+		ShowPlatform(token);
+		return Task.CompletedTask;
+	}
 
 	/// <summary>
 	/// Dismiss Toast
 	/// </summary>
-	public virtual Task Dismiss(CancellationToken token = default) => Dispatcher.GetForCurrentThread().DispatchIfRequiredAsync(() => DismissNative(token));
+	public virtual Task Dismiss(CancellationToken token = default)
+	{
+		DismissPlatform(token);
+		return Task.CompletedTask;
+	}
 
 	/// <summary>
 	/// Dispose Toast
 	/// </summary>
-	public async ValueTask DisposeAsync()
+	public void Dispose()
 	{
-		await DisposeAsyncCore();
+		Dispose(true);
 		GC.SuppressFinalize(this);
 	}
 
-	/// <summary>
-	/// Dispose Toast
-	/// </summary>
-#if ANDROID
-	protected virtual async ValueTask DisposeAsyncCore()
+	static TimeSpan GetDuration(ToastDuration duration) => duration switch
 	{
-		await Dispatcher.GetForCurrentThread().DispatchIfRequiredAsync(() => NativeToast?.Dispose());
-	}
-#else
-	protected virtual ValueTask DisposeAsyncCore()
-	{
-		return ValueTask.CompletedTask;
-	}
-#endif
-
-#if IOS || MACCATALYST || WINDOWS
-	static TimeSpan GetDuration(ToastDuration duration)
-	{
-		return duration switch
-		{
-			ToastDuration.Short => TimeSpan.FromSeconds(2),
-			ToastDuration.Long => TimeSpan.FromSeconds(3.5),
-			_ => throw new InvalidEnumArgumentException(nameof(Duration), (int)duration, typeof(ToastDuration))
-		};
-	}
-#endif
-
-#if ANDROID || IOS || MACCATALYST || WINDOWS
-	static NativeToast? nativeToast;
-
-	static NativeToast? NativeToast
-	{
-		get
-		{
-			return MainThread.IsMainThread
-				? nativeToast
-				: throw new InvalidOperationException($"{nameof(nativeToast)} can only be called from the Main Thread");
-		}
-		set
-		{
-			if (!MainThread.IsMainThread)
-			{
-				throw new InvalidOperationException($"{nameof(nativeToast)} can only be called from the Main Thread");
-			}
-
-			nativeToast = value;
-		}
-	}
-#endif
-
-
-	private partial void ShowNative(CancellationToken token);
-
-	private partial void DismissNative(CancellationToken token);
-
-#if !(IOS || ANDROID || MACCATALYST || WINDOWS)
-	/// <summary>
-	/// Show Toast
-	/// </summary>
-	private partial void ShowNative(CancellationToken token)
-	{
-		token.ThrowIfCancellationRequested();
-	}
-
-	/// <summary>
-	/// Dismiss Toast
-	/// </summary>
-	private partial void DismissNative(CancellationToken token)
-	{
-		token.ThrowIfCancellationRequested();
-	}
-#endif
+		ToastDuration.Short => TimeSpan.FromSeconds(2),
+		ToastDuration.Long => TimeSpan.FromSeconds(3.5),
+		_ => throw new InvalidEnumArgumentException(nameof(Duration), (int)duration, typeof(ToastDuration))
+	};
 }

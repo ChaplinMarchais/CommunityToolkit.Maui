@@ -6,8 +6,11 @@ namespace CommunityToolkit.Maui.Converters;
 /// <summary>
 ///     Convert an <see cref="Enum" /> to corresponding <see cref="bool" />
 /// </summary>
-public class EnumToBoolConverter : BaseConverterOneWay<Enum, bool>
+public class EnumToBoolConverter : BaseConverterOneWay<Enum, bool, Enum?>
 {
+	/// <inheritdoc/>
+	public override bool DefaultConvertReturnValue { get; set; } = false;
+
 	/// <summary>
 	///     Enum values, that converts to <c>true</c> (optional)
 	/// </summary>
@@ -17,7 +20,6 @@ public class EnumToBoolConverter : BaseConverterOneWay<Enum, bool>
 	///     Convert an <see cref="Enum" /> to corresponding <see cref="bool" />
 	/// </summary>
 	/// <param name="value"><see cref="Enum" /> value to convert</param>
-	/// <param name="targetType">The type of the binding target property. This is not implemented.</param>
 	/// <param name="parameter">
 	///     Additional parameter for converter. Can be used for comparison instead of
 	///     <see cref="TrueValues" />
@@ -28,17 +30,17 @@ public class EnumToBoolConverter : BaseConverterOneWay<Enum, bool>
 	///     value not equal to parameter.
 	/// </returns>
 	/// <exception cref="ArgumentException">If value is not an <see cref="Enum" /></exception>
-	public override bool ConvertFrom(Enum value, Type targetType, object? parameter, CultureInfo? culture)
+	public override bool ConvertFrom(Enum value, Enum? parameter = null, CultureInfo? culture = null)
 	{
 		ArgumentNullException.ThrowIfNull(value);
 
 		return TrueValues.Count == 0
-			? CompareTwoEnums(value, parameter as Enum)
+			? CompareTwoEnums(value, parameter)
 			: TrueValues.Any(item => CompareTwoEnums(value, item));
 
-		static bool CompareTwoEnums(Enum valueToCheck, object? referenceValue)
+		static bool CompareTwoEnums(in Enum valueToCheck, in Enum? referenceEnumValue)
 		{
-			if (referenceValue is not Enum referenceEnumValue)
+			if (referenceEnumValue is null)
 			{
 				return false;
 			}

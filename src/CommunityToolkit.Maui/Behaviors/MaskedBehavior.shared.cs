@@ -1,12 +1,13 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 
 namespace CommunityToolkit.Maui.Behaviors;
 
 /// <summary>
 /// The MaskedBehavior is a behavior that allows the user to define an input mask for data entry. Adding this behavior to an <see cref="InputView"/> (i.e. <see cref="Entry"/>) control will force the user to only input values matching a given mask. Examples of its usage include input of a credit card number or a phone number.
 /// </summary>
-public class MaskedBehavior : BaseBehavior<InputView>
+public class MaskedBehavior : BaseBehavior<InputView>, IDisposable
 {
 	/// <summary>
 	/// BindableProperty for the <see cref="Mask"/> property.
@@ -22,7 +23,14 @@ public class MaskedBehavior : BaseBehavior<InputView>
 
 	readonly SemaphoreSlim applyMaskSemaphoreSlim = new(1, 1);
 
+	bool isDisposed;
+
 	IReadOnlyDictionary<int, char>? maskPositions;
+
+	/// <summary>
+	/// Finalizer
+	/// </summary>
+	~MaskedBehavior() => Dispose(false);
 
 	/// <summary>
 	/// The mask that the input value needs to match. This is a bindable property.
@@ -34,12 +42,39 @@ public class MaskedBehavior : BaseBehavior<InputView>
 	}
 
 	/// <summary>
-	/// The placeholder character for when no input has been given yet. This is a bindable property.
+	/// Gets or sets which character in the <see cref="Mask"/> property that will be visible and entered by a user. Defaults to 'X'. This is a bindable property.
+	/// <br/>
+	/// By default the 'X' character will be unmasked therefore a <see cref="Mask"/> of "XX XX XX" would display "12 34 56".
+	/// If you wish to include 'X' in your <see cref="Mask"/> then you could set this <see cref="UnmaskedCharacter"/> to something else
+	/// e.g. '0' and then use a <see cref="Mask"/> of "00X00X00" which would then display "12X34X56".
 	/// </summary>
 	public char UnmaskedCharacter
 	{
 		get => (char)GetValue(UnmaskedCharacterProperty);
 		set => SetValue(UnmaskedCharacterProperty, value);
+	}
+
+	/// <inheritdoc/>
+	public void Dispose()
+	{
+		Dispose(true);
+		GC.SuppressFinalize(this);
+	}
+
+	/// <inheritdoc/>
+	protected virtual void Dispose(bool disposing)
+	{
+		if (isDisposed)
+		{
+			return;
+		}
+
+		if (disposing)
+		{
+			applyMaskSemaphoreSlim.Dispose();
+		}
+
+		isDisposed = true;
 	}
 
 	/// <inheritdoc />

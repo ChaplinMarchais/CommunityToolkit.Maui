@@ -2,35 +2,23 @@
 using CommunityToolkit.Maui.Sample.Models;
 using CommunityToolkit.Maui.Sample.ViewModels;
 using static CommunityToolkit.Maui.Markup.GridRowsColumns;
-using Application = Microsoft.Maui.Controls.Application;
 
 namespace CommunityToolkit.Maui.Sample.Pages;
 
 public abstract class BaseGalleryPage<TViewModel> : BasePage where TViewModel : BaseGalleryViewModel, new()
 {
-	protected BaseGalleryPage(string title, IDeviceInfo deviceInfo, TViewModel viewModel) : base(deviceInfo, viewModel)
+	protected BaseGalleryPage(string title, IDeviceInfo deviceInfo, TViewModel viewModel) : base(viewModel)
 	{
 		Title = title;
 		BindingContext = new TViewModel();
 
-		if (deviceInfo.Platform == DevicePlatform.iOS && deviceInfo.Idiom == DeviceIdiom.Phone) // iOS Phones
-		{
-			Padding = new Thickness(0, 96, 0, 0);
-		}
-		else if (deviceInfo.Platform == DevicePlatform.iOS || deviceInfo.Platform == DevicePlatform.MacCatalyst) //iOS Tablets + MacCatalyst
-		{
-			Padding = new Thickness(0, 84, 0, 0);
-		}
-		else
-		{
-			Padding = 0;
-		}
+		Padding = 0;
 
 		Content = new CollectionView
 		{
 			SelectionMode = SelectionMode.Single,
-			ItemTemplate = new GalleryDataTemplate()
-		}.Bind(ItemsView.ItemsSourceProperty, nameof(BaseGalleryViewModel.Items))
+		}.ItemTemplate(new GalleryDataTemplate())
+		 .Bind(ItemsView.ItemsSourceProperty, nameof(BaseGalleryViewModel.Items))
 		 .Invoke(collectionView => collectionView.SelectionChanged += HandleSelectionChanged);
 	}
 
@@ -41,12 +29,10 @@ public abstract class BaseGalleryPage<TViewModel> : BasePage where TViewModel : 
 		var collectionView = (CollectionView)sender;
 		collectionView.SelectedItem = null;
 
-		if (e.CurrentSelection.FirstOrDefault() is not SectionModel sectionModel)
+		if (e.CurrentSelection.FirstOrDefault() is SectionModel sectionModel)
 		{
-			return;
+			await Shell.Current.GoToAsync(AppShell.GetPageRoute(sectionModel.ViewModelType));
 		}
-
-		await Shell.Current.GoToAsync(AppShell.GetPageRoute(sectionModel.ViewModelType));
 	}
 
 	class GalleryDataTemplate : DataTemplate
@@ -61,8 +47,6 @@ public abstract class BaseGalleryPage<TViewModel> : BasePage where TViewModel : 
 
 		static Grid CreateDataTemplate() => new()
 		{
-			BackgroundColor = (Color)(Application.Current?.Resources["AppBackgroundColor"] ?? throw new InvalidOperationException("Application.Current cannot be null")),
-
 			RowDefinitions = Rows.Define(
 				(Row.TopPadding, 6),
 				(Row.Content, Star),
@@ -75,18 +59,18 @@ public abstract class BaseGalleryPage<TViewModel> : BasePage where TViewModel : 
 
 			Children =
 			{
-				new Card().Row(Row.Content).Column(Column.Content)
+				new Card().Row(Row.Content).Column(Column.Content).DynamicResource(Border.StyleProperty, "border_gallery_card")
 			}
 		};
 
-		class Card : Frame
+		class Card : Border
 		{
 			public Card()
 			{
-				Style = (Style)(Application.Current?.Resources["card"] ?? throw new InvalidOperationException());
-
 				Content = new Grid
 				{
+					BackgroundColor = Colors.Transparent,
+
 					RowSpacing = 4,
 
 					RowDefinitions = Rows.Define(
@@ -95,13 +79,15 @@ public abstract class BaseGalleryPage<TViewModel> : BasePage where TViewModel : 
 
 					Children =
 					{
-						new Label { Style = (Style)(Application.Current?.Resources["label_section_header"] ?? throw new InvalidOperationException()) }
+						new Label()
 							.Row(CardRow.Title)
-							.Bind(Label.TextProperty, nameof(SectionModel.Title)),
+							.Bind(Label.TextProperty, nameof(SectionModel.Title))
+							.DynamicResource(Label.StyleProperty, "label_section_title"),
 
 						new Label { MaxLines = 4, LineBreakMode = LineBreakMode.WordWrap }
 							.Row(CardRow.Description).TextStart().TextTop()
 							.Bind(Label.TextProperty, nameof(SectionModel.Description))
+							.DynamicResource(Label.StyleProperty, "label_section_text")
 					}
 				};
 			}

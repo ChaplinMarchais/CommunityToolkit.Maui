@@ -1,41 +1,51 @@
-﻿using CommunityToolkit.WinUI.Notifications;
-using Windows.Data.Xml.Dom;
-using Windows.UI.Notifications;
+﻿using Windows.UI.Notifications;
+using static CommunityToolkit.Maui.Extensions.ToastNotificationExtensions;
 
 namespace CommunityToolkit.Maui.Alerts;
 
 public partial class Toast
 {
-	private partial void DismissNative(CancellationToken token)
+	static Windows.UI.Notifications.ToastNotification? PlatformToast { get; set; }
+
+	/// <summary>
+	/// Dispose Toast
+	/// </summary>
+	protected virtual void Dispose(bool isDisposing)
 	{
-		if (NativeToast is not null)
+		if (isDisposed)
+		{
+			return;
+		}
+
+		if (isDisposing)
+		{
+		}
+
+		isDisposed = true;
+	}
+
+	static void DismissPlatform(CancellationToken token)
+	{
+		if (PlatformToast is not null)
 		{
 			token.ThrowIfCancellationRequested();
 			ToastNotificationManager.History.Clear();
 
-			NativeToast.ExpirationTime = DateTimeOffset.Now;
-			NativeToast = null;
+			PlatformToast.ExpirationTime = DateTimeOffset.Now;
+			PlatformToast = null;
 		}
 	}
 
-	private partial void ShowNative(CancellationToken token)
+	void ShowPlatform(CancellationToken token)
 	{
-		DismissNative(token);
+		DismissPlatform(token);
 		token.ThrowIfCancellationRequested();
-		var toastContentBuilder = new ToastContentBuilder()
-			.AddText(Text);
 
-		var toastContent = toastContentBuilder.GetToastContent();
-		toastContent.ActivationType = ToastActivationType.Background;
-
-		var xmlDocument = new XmlDocument();
-		xmlDocument.LoadXml(toastContent.GetContent());
-
-		NativeToast = new ToastNotification(xmlDocument)
+		PlatformToast = new ToastNotification(BuildToastNotificationContent(Text))
 		{
 			ExpirationTime = DateTimeOffset.Now.Add(GetDuration(Duration))
 		};
 
-		ToastNotificationManager.CreateToastNotifier().Show(NativeToast);
+		ToastNotificationManager.CreateToastNotifier().Show(PlatformToast);
 	}
 }

@@ -1,3 +1,5 @@
+﻿using System.Globalization;
+
 namespace CommunityToolkit.Maui.Core.Extensions;
 
 /// <summary>
@@ -11,7 +13,7 @@ public static class ColorConversionExtensions
 	/// <param name="color">The <see cref="Color"/> to convert.</param>
 	/// <returns>
 	/// A <see cref="string"/> in the format: <c>RGB(red,green,blue)</c> where <b>red</b>, <b>green</b> and <b>blue</b> will be a value between 0 and 255.
-	/// (e.g. <c>RGB(255,0,0)</c> for <see cref="Color.Red"/>).
+	/// (e.g. <c>RGB(255,0,0)</c> for <see cref="Colors.Red"/>).
 	/// </returns>
 	/// <exception cref="ArgumentNullException">Thrown when <paramref name="color"/> is null.</exception>
 	public static string ToRgbString(this Color color)
@@ -24,60 +26,16 @@ public static class ColorConversionExtensions
 	/// Converts this <see cref="Color"/> to a <see cref="string"/> containing the red, green, blue and alpha components.
 	/// </summary>
 	/// <param name="color">The <see cref="Color"/> to convert.</param>
+	/// <param name="cultureInfo">The <see cref="CultureInfo"/>.</param>
 	/// <returns>
 	/// A <see cref="string"/> in the format: <c>RGBA(red,green,blue,alpha)</c> where <b>red</b>, <b>green</b> and <b>blue</b> will be a value between 0 and 255,
-	/// and <b>alpha</b> is a value between 0 and 1. (e.g. <c>RGBA(255,0,0,1)</c> for <see cref="Color.Red"/>).
+	/// and <b>alpha</b> is a value between 0 and 1. (e.g. <c>RGBA(255,0,0,1)</c> for <see cref="Colors.Red"/>).
 	/// </returns>
 	/// <exception cref="ArgumentNullException">Thrown when <paramref name="color"/> is null.</exception>
-	public static string ToRgbaString(this Color color)
+	public static string ToRgbaString(this Color color, CultureInfo? cultureInfo = null)
 	{
 		ArgumentNullException.ThrowIfNull(color);
-		return $"RGBA({color.GetByteRed()},{color.GetByteGreen()},{color.GetByteBlue()},{color.Alpha})";
-	}
-
-	/// <summary>
-	/// Converts this <see cref="Color"/> to a <see cref="string"/> containing the red, green and blue components in hexadecimal.
-	/// </summary>
-	/// <param name="color">The <see cref="Color"/> to convert.</param>
-	/// <returns>
-	/// A <see cref="string"/> in the format: <c>#redgreenblue</c> where <b>red</b>, <b>green</b> and <b>blue</b> will be a value between 00 and FF.
-	/// (e.g. <c>#FF0000</c> for <see cref="Color.Red"/>).
-	/// </returns>
-	/// <exception cref="ArgumentNullException">Thrown when <paramref name="color"/> is null.</exception>
-	public static string ToHexRgbString(this Color color)
-	{
-		ArgumentNullException.ThrowIfNull(color);
-		return $"#{color.GetByteRed():X2}{color.GetByteGreen():X2}{color.GetByteBlue():X2}";
-	}
-
-	/// <summary>
-	/// Converts this <see cref="Color"/> to a <see cref="string"/> containing the red, green, blue and alpha components in hexadecimal.
-	/// </summary>
-	/// <param name="color">The <see cref="Color"/> to convert.</param>
-	/// <returns>
-	/// A <see cref="string"/> in the format: <c>#redgreenbluealpha</c> where <b>red</b>, <b>green</b>, <b>blue</b> and <b>alpha</b> will be a value between 00 and FF.
-	/// e.g. <c>#FF000000</c> for <see cref="Color.Red"/>).
-	/// </returns>
-	/// <exception cref="ArgumentNullException">Thrown when <paramref name="color"/> is null.</exception>
-	public static string ToHexRgbaString(this Color color)
-	{
-		ArgumentNullException.ThrowIfNull(color);
-		return $"#{color.GetByteRed():X2}{color.GetByteGreen():X2}{color.GetByteBlue():X2}{color.GetByteAlpha():X2}";
-	}
-
-	/// <summary>
-	/// Converts this <see cref="Color"/> to a <see cref="string"/> containing the red, green, blue and alpha components in hexadecimal.
-	/// </summary>
-	/// <param name="color">The <see cref="Color"/> to convert.</param>
-	/// <returns>
-	/// A <see cref="string"/> in the format: <c>#alpharedgreenblue</c> where <b>alpha</b>, <b>red</b>, <b>green</b> and <b>blue</b> will be a value between 00 and FF.
-	/// e.g. <c>#00FF0000</c> for <see cref="Color.Red"/>).
-	/// </returns>
-	/// <exception cref="ArgumentNullException">Thrown when <paramref name="color"/> is null.</exception>
-	public static string ToHexArgbString(this Color color)
-	{
-		ArgumentNullException.ThrowIfNull(color);
-		return $"#{color.GetByteAlpha():X2}{color.GetByteRed():X2}{color.GetByteGreen():X2}{color.GetByteBlue():X2}";
+		return $"RGBA({color.GetByteRed()},{color.GetByteGreen()},{color.GetByteBlue()},{color.Alpha.ToString(cultureInfo)})";
 	}
 
 	/// <summary>
@@ -86,7 +44,7 @@ public static class ColorConversionExtensions
 	/// <param name="color">The <see cref="Color"/> to convert.</param>
 	/// <returns>
 	/// A <see cref="string"/> in the format: <c>CMYK(cyan,magenta,yellow,key)</c> where <b>cyan</b>, <b>magenta</b>, <b>yellow</b> and <b>key</b> will be a value between 0% and 100%.
-	/// (e.g. <c>CMYK(0,100,100,0)</c> for <see cref="Color.Red"/>).
+	/// (e.g. <c>CMYK(0%,100%,100%,0%)</c> for <see cref="Colors.Red"/>).
 	/// </returns>
 	/// <exception cref="ArgumentNullException">Thrown when <paramref name="color"/> is null.</exception>
 	public static string ToCmykString(this Color color)
@@ -99,15 +57,16 @@ public static class ColorConversionExtensions
 	/// Converts this <see cref="Color"/> to a <see cref="string"/> containing the cyan, magenta, yellow, key and alpha components.
 	/// </summary>
 	/// <param name="color">The <see cref="Color"/> to convert.</param>
+	/// <param name="cultureInfo">The <see cref="CultureInfo"/>.</param>
 	/// <returns>
 	/// A <see cref="string"/> in the format: <c>CMYKA(cyan,magenta,yellow,key,alpha)</c> where <b>cyan</b>, <b>magenta</b>, <b>yellow </b>and <b>key</b> will be a value between
-	/// 0% and 100% and <b>alpha</b> will be a value between 0 and 1. (e.g. <c>CMYKA(100%,100%,0%,100%,1)</c> for <see cref="Color.Red"/>).
+	/// 0% and 100% and <b>alpha</b> will be a value between 0 and 1. (e.g. <c>CMYKA(100%,100%,0%,100%,1)</c> for <see cref="Colors.Red"/>).
 	/// </returns>
 	/// <exception cref="ArgumentNullException">Thrown when <paramref name="color"/> is null.</exception>
-	public static string ToCmykaString(this Color color)
+	public static string ToCmykaString(this Color color, CultureInfo? cultureInfo = null)
 	{
 		ArgumentNullException.ThrowIfNull(color);
-		return $"CMYKA({color.GetPercentCyan():P0},{color.GetPercentMagenta():P0},{color.GetPercentYellow():P0},{color.GetPercentBlackKey():P0},{color.Alpha})";
+		return $"CMYKA({color.GetPercentCyan():P0},{color.GetPercentMagenta():P0},{color.GetPercentYellow():P0},{color.GetPercentBlackKey():P0},{color.Alpha.ToString(cultureInfo)})";
 	}
 
 	/// <summary>
@@ -116,7 +75,7 @@ public static class ColorConversionExtensions
 	/// <param name="color">The <see cref="Color"/> to convert.</param>
 	/// <returns>
 	/// A <see cref="string"/> in the format: <c>HSL(hue,saturation,lightness)</c> where <b>hue</b> will be a value between 0 and 360, and <b>saturation</b> and <b>lightness</b>
-	/// will be a value between 0% and 100%. (e.g. <c>HSL(0,100%,50%)</c> for <see cref="Color.Red"/>).
+	/// will be a value between 0% and 100%. (e.g. <c>HSL(0,100%,50%)</c> for <see cref="Colors.Red"/>).
 	/// </returns>
 	/// <exception cref="ArgumentNullException">Thrown when <paramref name="color"/> is null.</exception>
 	public static string ToHslString(this Color color)
@@ -129,15 +88,16 @@ public static class ColorConversionExtensions
 	/// Converts this <see cref="Color"/> to a <see cref="string"/> containing the hue, saturation, lightness and alpha components.
 	/// </summary>
 	/// <param name="color">The <see cref="Color"/> to convert.</param>
+	/// <param name="cultureInfo">The <see cref="CultureInfo"/>.</param>
 	/// <returns>
 	/// A <see cref="string"/> in the format: <c>HSLA(hue,saturation,lightness,alpha)</c> where <b>hue</b> will be a value between 0 and 360, <b>saturation</b> and <b>lightness</b>
-	/// will be a value between 0% and 100%, and <b>alpha</b> will be a value between 0 and 1. (e.g. <c>HSLA(0,100%,50%,1)</c> for <see cref="Color.Red"/>).
+	/// will be a value between 0% and 100%, and <b>alpha</b> will be a value between 0 and 1. (e.g. <c>HSLA(0,100%,50%,1)</c> for <see cref="Colors.Red"/>).
 	/// </returns>
 	/// <exception cref="ArgumentNullException">Thrown when <paramref name="color"/> is null.</exception>
-	public static string ToHslaString(this Color color)
+	public static string ToHslaString(this Color color, CultureInfo? cultureInfo = null)
 	{
 		ArgumentNullException.ThrowIfNull(color);
-		return $"HSLA({color.GetDegreeHue():0},{color.GetSaturation():P0},{color.GetLuminosity():P0},{color.Alpha})";
+		return $"HSLA({color.GetDegreeHue():0},{color.GetSaturation():P0},{color.GetLuminosity():P0},{color.Alpha.ToString(cultureInfo)})";
 	}
 
 	/// <summary>
@@ -151,7 +111,6 @@ public static class ColorConversionExtensions
 	public static Color WithRed(this Color color, double redComponent)
 	{
 		ArgumentNullException.ThrowIfNull(color);
-
 		return redComponent is < 0 or > 1
 				? throw new ArgumentOutOfRangeException(nameof(redComponent))
 				: Color.FromRgba(redComponent, color.Green, color.Blue, color.Alpha);
@@ -230,20 +189,6 @@ public static class ColorConversionExtensions
 		ArgumentNullException.ThrowIfNull(color);
 
 		return Color.FromRgba(color.Red, color.Green, (double)blueComponent / 255, color.Alpha);
-	}
-
-	/// <summary>
-	/// Applies the supplied <paramref name="alphaComponent"/> to this <see cref="Color"/>.
-	/// </summary>
-	/// <param name="color">The <see cref="Color"/> to modify.</param>
-	/// <param name="alphaComponent">The alpha component to apply to the existing <see cref="Color"/>. Note this value must be between 0 and 255.</param>
-	/// <returns>A <see cref="Color"/> with the supplied <paramref name="alphaComponent"/> applied.</returns>
-	/// <exception cref="ArgumentNullException">Thrown when <paramref name="color"/> is null.</exception>
-	public static Color WithAlpha(this Color color, byte alphaComponent)
-	{
-		ArgumentNullException.ThrowIfNull(color);
-
-		return Color.FromRgba(color.Red, color.Green, color.Blue, (double)alphaComponent / 255);
 	}
 
 	/// <summary>

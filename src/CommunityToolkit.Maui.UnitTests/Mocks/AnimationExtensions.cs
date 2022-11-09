@@ -54,7 +54,7 @@ static class AnimationExtensions
 			}
 		}
 
-		class AsyncTicker : Ticker
+		sealed class AsyncTicker : Ticker, IDisposable
 		{
 			CancellationTokenSource? cancellationTokenSource;
 
@@ -74,6 +74,11 @@ static class AnimationExtensions
 			}
 
 			public override void Stop() => cancellationTokenSource?.Cancel();
+
+			public void Dispose()
+			{
+				cancellationTokenSource?.Dispose();
+			}
 		}
 
 		class TestAnimationManager : IAnimationManager
@@ -113,14 +118,14 @@ static class AnimationExtensions
 			void OnFire()
 			{
 				var animations = this.animations.ToList();
-				animations.ForEach(animationTick);
+				animations.ForEach(AnimationTick);
 
 				if (!this.animations.Any())
 				{
 					Ticker.Stop();
 				}
 
-				void animationTick(Microsoft.Maui.Animations.Animation animation)
+				void AnimationTick(Microsoft.Maui.Animations.Animation animation)
 				{
 					if (animation.HasFinished)
 					{

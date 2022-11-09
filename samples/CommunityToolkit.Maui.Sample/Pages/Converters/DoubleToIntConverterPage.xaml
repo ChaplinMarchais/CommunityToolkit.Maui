@@ -5,7 +5,9 @@
     xmlns:mct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:pages="clr-namespace:CommunityToolkit.Maui.Sample.Pages"
     xmlns:vm="clr-namespace:CommunityToolkit.Maui.Sample.ViewModels.Converters"
-    x:Class="CommunityToolkit.Maui.Sample.Pages.Converters.DoubleToIntConverterPage">
+    x:Class="CommunityToolkit.Maui.Sample.Pages.Converters.DoubleToIntConverterPage"
+    x:DataType="vm:DoubleToIntConverterViewModel"
+    x:TypeArguments="vm:DoubleToIntConverterViewModel">
     <pages:BasePage.Resources>
         <ResourceDictionary>
             <mct:DoubleToIntConverter x:Key="DoubleToIntConverter" />

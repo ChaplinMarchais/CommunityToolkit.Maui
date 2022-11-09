@@ -14,16 +14,74 @@ public partial class Snackbar
 {
 	TaskCompletionSource<bool>? dismissedTCS;
 
-	private async partial Task DismissNative(CancellationToken token)
+	static Google.Android.Material.Snackbar.Snackbar? PlatformSnackbar { get; set; }
+
+	/// <summary>
+	/// Dispose Snackbar
+	/// </summary>
+	protected virtual void Dispose(bool isDisposing)
 	{
-		if (NativeSnackbar is null)
+		if (isDisposed)
+		{
+			return;
+		}
+
+		if (isDisposing)
+		{
+			PlatformSnackbar?.Dispose();
+		}
+
+		isDisposed = true;
+	}
+
+	static bool IsModalPageActive() => Application.Current?.MainPage is not null &&
+										Application.Current.MainPage.Navigation.ModalStack.Count > 0;
+
+	static View GetParentView()
+	{
+		var parentView = Microsoft.Maui.ApplicationModel.Platform.CurrentActivity?.Window?.DecorView.FindViewById(Android.Resource.Id.Content);
+
+		if (IsModalPageActive())
+		{
+			parentView = parentView?.RootView;
+		}
+
+		return parentView ?? throw new NotSupportedException("Unable to retrieve Snackbar parent");
+	}
+
+	static void SetLayoutParametersForView(in View snackbarView)
+	{
+		if (IsModalPageActive() && snackbarView.Context?.Resources is not null)
+		{
+			var resourceId = snackbarView.Context.Resources.GetIdentifier(
+				"navigation_bar_height",
+				"dimen",
+				"android"
+			);
+			var navBarHeight = snackbarView.Context.Resources.GetDimensionPixelSize(resourceId);
+			var layoutParameters = (FrameLayout.LayoutParams?)snackbarView.LayoutParameters;
+			if (layoutParameters is not null)
+			{
+				layoutParameters.SetMargins(layoutParameters.LeftMargin, layoutParameters.TopMargin, layoutParameters.RightMargin, layoutParameters.BottomMargin + navBarHeight);
+				snackbarView.LayoutParameters = layoutParameters;
+			}
+		}
+	}
+
+	async Task DismissPlatform(CancellationToken token)
+	{
+		if (PlatformSnackbar is null)
 		{
 			dismissedTCS = null;
 			return;
 		}
+
 		token.ThrowIfCancellationRequested();
 
-		NativeSnackbar.Dismiss();
+		if (!PlatformSnackbar.IsDisposed())
+		{
+			PlatformSnackbar.Dismiss();
+		}
 
 		if (dismissedTCS is not null)
 		{
@@ -34,30 +92,28 @@ public partial class Snackbar
 	/// <summary>
 	/// Show Snackbar
 	/// </summary>
-	private async partial Task ShowNative(CancellationToken token)
+	async Task ShowPlatform(CancellationToken token)
 	{
-		await DismissNative(token);
+		await DismissPlatform(token);
 		token.ThrowIfCancellationRequested();
 
-		var rootView = Microsoft.Maui.Essentials.Platform.GetCurrentActivity(true).Window?.DecorView.FindViewById(Android.Resource.Id.Content)
-			?? throw new NotSupportedException("Unable to retrieve snackbar parent");
-
-		NativeSnackbar = Google.Android.Material.Snackbar.Snackbar.Make(rootView, Text, (int)Duration.TotalMilliseconds);
-		var snackbarView = NativeSnackbar.View;
+		PlatformSnackbar = Google.Android.Material.Snackbar.Snackbar.Make(GetParentView(), Text, (int)Duration.TotalMilliseconds);
+		var snackbarView = PlatformSnackbar.View;
 
 		if (Anchor is not Page)
 		{
-			NativeSnackbar.SetAnchorView(Anchor?.Handler?.PlatformView as View);
+			PlatformSnackbar.SetAnchorView(Anchor?.Handler?.PlatformView as View);
 		}
 
-		SetupContainer(snackbarView);
-		SetupMessage(snackbarView);
-		SetupActions(NativeSnackbar);
+		SetLayoutParametersForView(snackbarView);
+		SetContainerForView(snackbarView);
+		SetMessageForView(snackbarView);
+		SetActionForSnackbar(PlatformSnackbar);
 
-		NativeSnackbar.Show();
+		PlatformSnackbar.Show();
 	}
 
-	void SetupContainer(View snackbarView)
+	void SetContainerForView(in View snackbarView)
 	{
 		if (snackbarView.Background is GradientDrawable shape)
 		{
@@ -69,19 +125,20 @@ public partial class Snackbar
 				VisualOptions.CornerRadius.TopLeft * density,
 				VisualOptions.CornerRadius.TopRight * density,
 				VisualOptions.CornerRadius.BottomRight * density);
+
 			shape.SetCornerRadii(new[]
-				{
-					(float)cornerRadius.Left, (float)cornerRadius.Left,
-					(float)cornerRadius.Top, (float)cornerRadius.Top,
-					(float)cornerRadius.Right, (float)cornerRadius.Right,
-					(float)cornerRadius.Bottom, (float)cornerRadius.Bottom
-				});
+			{
+				(float)cornerRadius.Left, (float)cornerRadius.Left,
+				(float)cornerRadius.Top, (float)cornerRadius.Top,
+				(float)cornerRadius.Right, (float)cornerRadius.Right,
+				(float)cornerRadius.Bottom, (float)cornerRadius.Bottom
+			});
 
 			snackbarView.SetBackground(shape);
 		}
 	}
 
-	void SetupMessage(View snackbarView)
+	void SetMessageForView(in View snackbarView)
 	{
 		var snackTextView = snackbarView.FindViewById<TextView>(Resource.Id.snackbar_text) ?? throw new InvalidOperationException("Unable to find Snackbar text view");
 		snackTextView.SetMaxLines(10);
@@ -96,22 +153,19 @@ public partial class Snackbar
 	}
 
 	[MemberNotNull(nameof(dismissedTCS))]
-	void SetupActions(Google.Android.Material.Snackbar.Snackbar nativeSnackbar)
+	void SetActionForSnackbar(in Google.Android.Material.Snackbar.Snackbar platformSnackbar)
 	{
-		var snackActionButtonView = nativeSnackbar.View.FindViewById<TextView>(Resource.Id.snackbar_action) ?? throw new InvalidOperationException("Unable to find Snackbar action button");
+		var snackActionButtonView = platformSnackbar.View.FindViewById<TextView>(Resource.Id.snackbar_action) ?? throw new InvalidOperationException("Unable to find Snackbar action button");
 
-		nativeSnackbar.SetActionTextColor(VisualOptions.ActionButtonTextColor.ToAndroid());
+		platformSnackbar.SetActionTextColor(VisualOptions.ActionButtonTextColor.ToAndroid());
 		if (VisualOptions.ActionButtonFont.Size > 0)
 		{
 			snackActionButtonView.SetTextSize(ComplexUnitType.Dip, (float)VisualOptions.ActionButtonFont.Size);
 		}
 
-		nativeSnackbar.SetAction(ActionButtonText, _ =>
-		{
-			Action?.Invoke();
-		});
+		platformSnackbar.SetAction(ActionButtonText, _ => Action?.Invoke());
 
-		nativeSnackbar.AddCallback(new SnackbarCallback(this, dismissedTCS = new()));
+		platformSnackbar.AddCallback(new SnackbarCallback(this, dismissedTCS = new()));
 	}
 
 	class SnackbarCallback : BaseTransientBottomBar.BaseCallback
