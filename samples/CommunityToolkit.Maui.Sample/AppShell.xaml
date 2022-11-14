@@ -69,9 +69,6 @@
                 Icon="{OnPlatform Default='dotnet_bot.png', MacCatalyst=''}">
         <ShellContent ContentTemplate="{DataTemplate layouts:LayoutsGalleryPage}" />
     </FlyoutItem>
-    <FlyoutItem Title="Views" Route="ViewsGalleryPage" Icon="dotnet_bot.png">
-        <ShellContent ContentTemplate="{DataTemplate views:TabViewPage}" />
-    </FlyoutItem>
 
     <FlyoutItem Title="Views"
                 Route="ViewsGalleryPage"

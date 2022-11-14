@@ -149,7 +149,7 @@ public static class MauiProgram
 		services.AddTransientWithShellRoute<MultiplePopupPage, MultiplePopupViewModel>();
 		services.AddTransientWithShellRoute<PopupAnchorPage, PopupAnchorViewModel>();
 		services.AddTransientWithShellRoute<PopupPositionPage, PopupPositionViewModel>();
-		services.AddTransientWithShellRoute<TabViewPage, TabViewPageViewModel>();
+		services.AddTransientWithShellRoute<TabViewPage, TabViewViewModel>();
 
 		// Add Popups
 		services.AddTransient<CsharpBindingPopup, CsharpBindingPopupViewModel>();

@@ -22,8 +22,6 @@ public class TabViewItemDataTemplate : DataTemplate
 
 		return new()
 		{
-			BackgroundColor = (Color)(Application.Current?.Resources["AppBackgroundColor"] ?? throw new InvalidOperationException()),
-
 			RowDefinitions = new()
 			{
 				new RowDefinition() { Height = 6 },
@@ -44,7 +42,7 @@ public class TabViewItemDataTemplate : DataTemplate
 
 	class TabItemCard : Frame
 	{
-		enum Rows { Title, Seperator, Footer}
+		enum Rows { Title, Seperator, Footer }
 
 		static Label NameLabel
 		{

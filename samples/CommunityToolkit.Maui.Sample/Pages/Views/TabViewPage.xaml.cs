@@ -1,11 +1,10 @@
-using CommunityToolkit.Maui.Sample.Pages;
 using CommunityToolkit.Maui.Sample.ViewModels.Views;
 
 namespace CommunityToolkit.Maui.Sample.Pages.Views;
 
-public partial class TabViewPage : BasePage<TabViewPageViewModel>
+public partial class TabViewPage
 {
-	public TabViewPage(TabViewPageViewModel viewModel) : base(viewModel)
+	public TabViewPage(TabViewViewModel viewModel) : base(viewModel)
 	{
 		InitializeComponent();
 	}

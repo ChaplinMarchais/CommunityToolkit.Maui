@@ -1,6 +1,4 @@
-﻿using Microsoft.Maui.Controls;
-
-namespace CommunityToolkit.Maui.Views.TabView;
+﻿namespace CommunityToolkit.Maui.Views;
 
 public class TabSelectionChangedEventArgs : SelectedItemChangedEventArgs
 {

@@ -1,49 +1,42 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <pages:BasePage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-			 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-			 xmlns:mct="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"
-			 xmlns:pages="clr-namespace:CommunityToolkit.Maui.Sample.Pages"
-             xmlns:views="clr-namespace:CommunityToolkit.Maui.Sample.ViewModels.Views"
-			 x:Class="CommunityToolkit.Maui.Sample.Pages.Views.TabViewPage"
-             x:TypeArguments="views:TabViewPageViewModel"
-             x:DataType="views:TabViewPageViewModel">
-    <pages:BasePage.Resources>
-        
-    </pages:BasePage.Resources>
-    <pages:BasePage.Content>
-        <mct:TabView
-				        TabStripPlacement="Bottom"
-				        TabStripBackgroundColor="Blue"
-				        TabStripHeight="60"
-				        TabIndicatorColor="Yellow"
-				        TabContentBackgroundColor="Yellow">
-            <mct:TabViewItem
-					        Icon="triangle.png"
-					        Text="Tab 1"
-					        TextColor="White"
-					        TextColorSelected="Yellow"
-					        FontSize="12">
-                <Grid 
-					            BackgroundColor="Gray">
-                    <Label
-						            HorizontalOptions="Center"
-						            VerticalOptions="Center"
-						            Text="TabContent1" />
-                </Grid>
-            </mct:TabViewItem>
-            <mct:TabViewItem
-				            Icon="circle.png"
-				            Text="Tab 2"
-				            TextColor="White"
-				            TextColorSelected="Yellow"
-				            FontSize="12">
-                <Grid>
-                    <Label    
-		    				        HorizontalOptions="Center"
-			    			        VerticalOptions="Center"
-				    		        Text="TabContent2" />
-                </Grid>
-            </mct:TabViewItem>
-        </mct:TabView>
-    </pages:BasePage.Content>
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:mct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:pages="clr-namespace:CommunityToolkit.Maui.Sample.Pages"
+             xmlns:viewModels="clr-namespace:CommunityToolkit.Maui.Sample.ViewModels.Views"
+             x:Class="CommunityToolkit.Maui.Sample.Pages.Views.TabViewPage"
+             x:TypeArguments="viewModels:TabViewViewModel"
+             x:DataType="viewModels:TabViewViewModel"
+             Title="TabView">
+    <mct:TabView TabStripPlacement="Bottom"
+                TabStripBackgroundColor="Blue"
+                TabStripHeight="60"
+                TabIndicatorColor="Yellow"
+                TabContentBackgroundColor="Yellow">
+        <mct:TabViewItem Icon="triangle.png"
+                            Text="Tab 1"
+                            TextColor="White"
+                            TextColorSelected="Yellow"
+                            FontSize="12">
+            <Grid 
+                                BackgroundColor="Gray">
+                <Label
+                                    HorizontalOptions="Center"
+                                    VerticalOptions="Center"
+                                    Text="TabContent1" />
+            </Grid>
+        </mct:TabViewItem>
+        <mct:TabViewItem Icon="circle.png"
+                    Text="Tab 2"
+                    TextColor="White"
+                    TextColorSelected="Yellow"
+                    FontSize="12">
+            <Grid>
+                <Label    
+                                    HorizontalOptions="Center"
+                                    VerticalOptions="Center"
+                                    Text="TabContent2" />
+            </Grid>
+        </mct:TabViewItem>
+    </mct:TabView>
 </pages:BasePage>
