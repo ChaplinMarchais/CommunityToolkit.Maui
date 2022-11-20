@@ -1,20 +1,25 @@
-using System.Collections.ObjectModel;
-
 namespace CommunityToolkit.Maui.Views;
 
 /// <summary>
 /// The tab view item.
 /// </summary>
 [ContentProperty(nameof(TabConentView))]
-public partial class TabViewItem : ContentView
+public partial class TabViewItem : TemplatedView
 {
+	/// <summary>
+	/// Gets or sets the <see cref="IView"/> to be displayed when the <see cref="TabViewItem"/> is selected
+	/// </summary>
 	public static readonly BindableProperty TabConentViewProperty = BindableProperty.Create(nameof(TabConentView), typeof(IView), typeof(TabViewItem), default(View));
 
+	/// <summary>
+	/// Gets or sets the <see cref="IView"/> to be displayed when the <see cref="TabViewItem"/> is selected
+	/// </summary>
 	public IView? TabConentView
 	{
 		get => (IView?)GetValue(TabConentViewProperty);
 		set => SetValue(TabConentViewProperty, value);
 	}
+
 	/// <summary>
 	/// Gets or sets the icon.
 	/// </summary>
@@ -28,6 +33,9 @@ public partial class TabViewItem : ContentView
 		set => SetValue(IconProperty, value);
 	}
 
+	/// <summary>
+	/// Gets or sets a value indicating whether seperator is visible.
+	/// </summary>
 	public static readonly BindableProperty IsSeperatorVisibleProperty = BindableProperty.Create(nameof(IsSeperatorVisible), typeof(bool), typeof(TabViewItem), true);
 
 	/// <summary>
@@ -89,9 +97,68 @@ public partial class TabViewItem : ContentView
 	}
 
 	/// <summary>
+	/// Gets or sets the <see cref="TabViewItem"/> footer
+	/// </summary>
+	public static readonly BindableProperty FooterProperty = BindableProperty.Create(nameof(Footer),
+		typeof(IView), typeof(TabViewItem));
+
+	/// <summary>
+	/// Gets or sets the <see cref="TabViewItem"/> footer
+	/// </summary>
+	public IView Footer
+	{
+		get => (IView)GetValue(FooterProperty);
+		set => SetValue(FooterProperty, value);
+	}
+
+
+	/// <summary>
+	/// This property tracks if the <see cref="TabViewItem"/> is selected
+	/// </summary>
+	public static readonly BindableProperty IsSelectedProperty = BindableProperty.Create(nameof(IsSelected), typeof(bool), typeof(TabViewItem), false, propertyChanged: OnIsSelectedChanged);
+
+	static void OnIsSelectedChanged(BindableObject bindable, object oldvalue, object newValue)
+	{
+		if (bindable is TabViewItem tabViewItem)
+		{
+			tabViewItem.Update((bool)newValue);
+		}
+	}
+
+	/// <summary>
+	/// This property tracks if the <see cref="TabViewItem"/> is selected
+	/// </summary>
+	public bool IsSelected
+	{
+		get => (bool)GetValue(IsSelectedProperty);
+		set => SetValue(IsSelectedProperty, value);
+	}
+
+	void Update(bool isSelected)
+	{
+		if (container is null)
+		{
+			return;
+		}
+
+		container.BackgroundColor = isSelected ? TextColorSelected : BackgroundColor;
+	}
+
+	Grid? container;
+
+	/// <summary>
 	/// Initializes a new instance of the <see cref="TabViewItem"/> class.
 	/// </summary>
 	public TabViewItem()
 	{
+	}
+
+	/// <inheritdoc />
+	protected override void OnApplyTemplate()
+	{
+		base.OnApplyTemplate();
+
+		container = Children.Select(e => e.IsTemplateRoot == true) as Grid;
+
 	}
 }

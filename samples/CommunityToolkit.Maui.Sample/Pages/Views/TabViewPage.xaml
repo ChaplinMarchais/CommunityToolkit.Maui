@@ -8,7 +8,7 @@
              x:TypeArguments="viewModels:TabViewViewModel"
              x:DataType="viewModels:TabViewViewModel"
              Title="TabView">
-    <mct:TabView TabStripPlacement="Bottom"
+    <mct:TabView x:Name="TabViewContainer" TabStripPlacement="Bottom"
                 TabStripBackgroundColor="Blue"
                 TabStripHeight="60"
                 TabIndicatorColor="Yellow"
@@ -32,7 +32,7 @@
                     TextColorSelected="Yellow"
                     FontSize="12">
             <Grid>
-                <Label    
+                <Label    ~
                                     HorizontalOptions="Center"
                                     VerticalOptions="Center"
                                     Text="TabContent2" />

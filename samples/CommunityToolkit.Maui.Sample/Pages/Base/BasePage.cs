@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Windows.Input;
 
 using CommunityToolkit.Maui.Sample.Models;
 using CommunityToolkit.Maui.Sample.ViewModels;

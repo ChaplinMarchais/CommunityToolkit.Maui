@@ -2,8 +2,14 @@
 
 namespace CommunityToolkit.Maui.Views;
 
+/// <summary>
+/// Defines a <see cref="DataTemplate"/> for a <see cref="TabViewItem"/> instance
+/// </summary>
 public class TabViewItemDataTemplate : DataTemplate
 {
+	/// <summary>
+	/// Instantiate new <see cref="TabViewItemDataTemplate"/>
+	/// </summary>
 	public TabViewItemDataTemplate() : base(CreateDataTemplate)
 	{
 
@@ -17,11 +23,12 @@ public class TabViewItemDataTemplate : DataTemplate
 	{
 		var tabItemCard = new TabItemCard();
 
-		tabItemCard.SetValue(Grid.RowProperty, ToInt(Row.Content));
-		tabItemCard.SetValue(Grid.ColumnProperty, ToInt(Column.Content));
+		Grid.SetRow(tabItemCard, (int)Row.Content);
+		Grid.SetColumn(tabItemCard, (int)Column.Content);
 
-		return new()
+		return new Grid
 		{
+
 			RowDefinitions = new()
 			{
 				new RowDefinition() { Height = 6 },
@@ -54,6 +61,7 @@ public class TabViewItemDataTemplate : DataTemplate
 
 				nameLabel.SetBinding(Label.TextProperty, nameof(TabViewItem.Text), BindingMode.OneWay);
 				nameLabel.SetBinding(Label.TextColorProperty, nameof(TabViewItem.TextColor), BindingMode.OneWay);
+				nameLabel.SetBinding(Label.FontSizeProperty, nameof(TabViewItem.FontSize), BindingMode.OneWay);
 
 				return nameLabel;
 			}
@@ -77,6 +85,19 @@ public class TabViewItemDataTemplate : DataTemplate
 			}
 		}
 
+		static IView Footer
+		{
+			get
+			{
+				var footer = new ContentView { Padding = 5 };
+
+				footer.SetValue(Grid.RowProperty, ToInt(Rows.Footer));
+				footer.SetBinding(ContentView.ContentProperty, nameof(TabViewItem.Footer), BindingMode.OneWay);
+
+				return footer;
+			}
+		}
+
 		public TabItemCard()
 		{
 			CornerRadius = 8;
@@ -89,7 +110,7 @@ public class TabViewItemDataTemplate : DataTemplate
 
 				RowDefinitions = new()
 				{
-					new RowDefinition() { Height = 24 },
+					new RowDefinition() { Height = GridLength.Auto },
 					new RowDefinition() { Height = 1 },
 					new RowDefinition() { Height = GridLength.Star },
 				},
@@ -98,6 +119,7 @@ public class TabViewItemDataTemplate : DataTemplate
 				{
 					NameLabel,
 					Seperator,
+					Footer,
 				}
 			};
 		}

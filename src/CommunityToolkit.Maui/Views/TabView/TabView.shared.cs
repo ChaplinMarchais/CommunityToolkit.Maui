@@ -1,47 +1,55 @@
 using System.Collections;
-using Microsoft.Maui;
-using CommunityToolkit.Maui.Core;
-using CommunityToolkit.Maui.Helpers;
-using System.Runtime.CompilerServices;
-using System.Collections.Specialized;
-using Microsoft.Maui.Controls;
 using System.Collections.ObjectModel;
-using CommunityToolkit.Maui.Sample.Helpers;
-using System.Globalization;
-using System.Reflection.Metadata;
+using System.Collections.Specialized;
+using CommunityToolkit.Maui.Helpers;
 
 namespace CommunityToolkit.Maui.Views;
 /// <summary>
 /// The tab view.
 /// </summary>
-[ContentProperty(nameof(Tabs))]
-public partial class TabView : ContentView, ITabViewController
+[ContentProperty(nameof(TabItems))]
+public partial class TabView : ContentView, IDisposable
 {
 	bool disposedValue;
 
-	public static readonly BindableProperty TabItemsSourceProperty = BindableProperty.Create(nameof(TabItemsSource), typeof(IList), typeof(TabView));
+
+	/// <summary>
+	/// Provides an 
+	/// </summary>
+	public static readonly BindableProperty TabItemsSourceProperty = BindableProperty.Create(nameof(TabItemsSource), typeof(IList), typeof(TabView), propertyChanged: OnTabItemsSourceChanged);
+
+	static void OnTabItemsSourceChanged(BindableObject bindable, object oldvalue, object newvalue)
+	{
+
+		((TabView)bindable).UpdateTabItemsSource();
+	}
+
 	/// <summary>
 	/// Gets or sets the tab items source.
 	/// </summary>
 	public IList? TabItemsSource
 	{
 		get => GetValue(TabItemsSourceProperty) as IList;
-		set
-		{
-			SetValue(TabItemsSourceProperty, value);
-			UpdateTabItemsSource();
-		}
+		set => SetValue(TabItemsSourceProperty, value);
 	}
 
-
-	public static readonly BindableProperty TabsProperty = BindableProperty.Create(nameof(Tabs), typeof(IList<TabViewItem>), typeof(TabView));
 	/// <summary>
-	/// Gets or sets the <see cref="TabViewItem"/> collection to be displayed
+	/// <see cref="ObservableCollection{TabViewItem}"/> to be displayed
 	/// </summary>
-	public IList<TabViewItem> Tabs
+	public static readonly BindableProperty TabItemsProperty = BindableProperty.Create(nameof(TabItems), typeof(ObservableCollection<TabViewItem>), typeof(TabView), defaultValueCreator: _ => new ObservableCollection<TabViewItem>(), propertyChanged: OnTabItemsChanged);
+
+	static void OnTabItemsChanged(BindableObject bindable, object oldvalue, object newvalue)
 	{
-		get => (ObservableCollection<TabViewItem>)GetValue(TabsProperty);
-		set => SetValue(TabsProperty, value);
+		((TabView)bindable).UpdateTabs();
+	}
+
+	/// <summary>
+	/// Gets or sets the <see cref="ObservableCollection{TabViewItem}"/> to be displayed
+	/// </summary>
+	public ObservableCollection<TabViewItem> TabItems
+	{
+		get => (ObservableCollection<TabViewItem>)GetValue(TabItemsProperty);
+		set => SetValue(TabItemsProperty, value);
 	}
 
 
@@ -65,8 +73,9 @@ public partial class TabView : ContentView, ITabViewController
 		set => SetValue(TabContentDataTemplateProperty, value);
 	}
 
-	//TODO: Guard clauses to ensure that the value when set is valid for the current Tabs collection size
-	public static readonly BindableProperty SelectedTabIndexProperty = BindableProperty.Create(nameof(SelectedTabIndex), typeof(int), typeof(TabView), defaultValue: 0);
+	//TODO: Guard clauses to ensure that the value when set is valid for the current TabItems collection size
+	public static readonly BindableProperty SelectedTabIndexProperty = BindableProperty.Create(nameof(SelectedTabIndex), typeof(int), typeof(TabView), defaultValue: 0, propertyChanged: OnSelectedTabChanged);
+
 	/// <summary>
 	/// Gets or sets the selected index.
 	/// </summary>
@@ -228,6 +237,7 @@ public partial class TabView : ContentView, ITabViewController
 
 	readonly WeakEventManager<SelectionChangedEventArgs> selectionChangedManager = new();
 	readonly WeakEventManager<TabViewScrolledEventArgs> tabViewScrolledManager = new();
+	IList<TabViewItem> tabItemsInternal;
 
 	public event EventHandler<SelectionChangedEventArgs> SelectionChanged
 	{
@@ -241,34 +251,21 @@ public partial class TabView : ContentView, ITabViewController
 		remove => tabViewScrolledManager.RemoveEventHandler(value);
 	}
 
-	/// <inheritdoc/>
-	public event EventHandler<SelectedItemChangedEventArgs> SelectedTabChanged;
-
-	/// <summary>
-	/// Handles the user clicking on a new <see cref="TabViewItem"/>.
-	/// </summary>
-	public void OnSelectedTabChanged(object? sender, SelectedItemChangedEventArgs args)
+	static void OnSelectedTabChanged(BindableObject sender, object oldValue, object value)
 	{
-		throw new NotImplementedException();
-	}
+		if (sender is TabView tabView)
+		{
+			tabView.CurrentTab = tabView.TabItems[(int)value];
+			tabView.CurrentTab.IsSelected = true;
 
-	/// <inheritdoc/>
-	public TabViewItem CurrentTab
-	{
-		get
-		{
-			return Tabs[SelectedTabIndex];
-		}
-		set
-		{
-			SelectedTabIndex = Tabs.IndexOf(value);
+			tabView.TabContentContainer.Content = tabView.CurrentTab.TabConentView as View;
 		}
 	}
+
+	/// <inheritdoc/>
+	public TabViewItem? CurrentTab { get; set; }
 
 	#region UI Members
-
-	INotifyCollectionChanged? internalTabItemSource;
-
 	CollectionView TabContainer { get; } = CreateTabContainer();
 
 	static CollectionView CreateTabContainer() => new()
@@ -317,15 +314,11 @@ public partial class TabView : ContentView, ITabViewController
 	/// </summary>
 	public TabView()
 	{
-		Tabs = new ObservableCollection<TabViewItem>();
-
-		((ObservableCollection<TabViewItem>)Tabs).CollectionChanged += OnTabsCollectionChanged;
-
-		SelectedTabChanged += OnSelectedTabChanged;
+		this.tabItemsInternal = Array.Empty<TabViewItem>();
+		TabItems.CollectionChanged += OnTabsCollectionChanged;
 
 		TabContainer.BindingContext = this;
 		TabContainer.ItemTemplate = new TabViewItemDataTemplate();
-		TabContainer.SetBinding(CollectionView.ItemsSourceProperty, nameof(TabView.Tabs), BindingMode.TwoWay);
 
 		TabViewContainer.AddRowDefinition(new() { Height = TabStripHeight });
 		TabViewContainer.AddRowDefinition(new RowDefinition() { Height = GridLength.Star });
@@ -335,8 +328,6 @@ public partial class TabView : ContentView, ITabViewController
 		TabViewContainer.SetRow(TabContainer, Convert.ToInt32(GridRow.TabItems));
 		TabViewContainer.SetRow(TabContentContainer, Convert.ToInt32(GridRow.TabContent));
 
-		//TabViewContainer.SetColumnSpan(TabContainer, (int)GridColumn.First | (int)GridColumn.Third);
-		//TabViewContainer.SetColumnSpan(TabContentContainer, (int)GridColumn.First | (int)GridColumn.Third);
 		TabViewContainer.SetColumn(TabContainer, Convert.ToInt32(GridColumn.Second));
 		TabViewContainer.SetColumn(TabContentContainer, Convert.ToInt32(GridColumn.Second));
 
@@ -354,11 +345,6 @@ public partial class TabView : ContentView, ITabViewController
 		UpdateTabs();
 	}
 
-	protected override void OnBindingContextChanged()
-	{
-		base.OnBindingContextChanged();
-	}
-
 	void OnTabItemsSourceCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
 	{
 		switch (e.Action)
@@ -370,7 +356,7 @@ public partial class TabView : ContentView, ITabViewController
 					foreach (var item in e.NewItems)
 					{
 						var tab = CreateTabItem(item);
-						Tabs.Insert(index++, tab);
+						TabItems.Insert(index++, tab);
 					}
 				}
 				break;
@@ -379,7 +365,7 @@ public partial class TabView : ContentView, ITabViewController
 				{
 					for (int i = e.OldStartingIndex + (e.OldItems.Count - 1); i >= e.OldStartingIndex; i--)
 					{
-						Tabs.RemoveAt(i);
+						TabItems.RemoveAt(i);
 					}
 				}
 				break;
@@ -392,18 +378,18 @@ public partial class TabView : ContentView, ITabViewController
 	/// Create a new <see cref="TabViewItem"/> from a given <paramref name="tabModel"/>
 	/// </summary>
 	/// <param name="tabModel">The model from which the tab is to be created</param>
-	protected virtual TabViewItem CreateTabItem(object tabModel)
+	protected TabViewItem CreateTabItem(object tabModel)
 	{
 		View? result;
 
 		switch (TabViewItemDataTemplate)
 		{
 			case DataTemplateSelector selector:
-				{
-					var template = selector.SelectTemplate(tabModel, this);
-					result = template.CreateContent() as View;
-					break;
-				}
+			{
+				var template = selector.SelectTemplate(tabModel, this);
+				result = template.CreateContent() as View;
+				break;
+			}
 
 			default:
 				result = TabViewItemDataTemplate?.CreateContent() as View;
@@ -415,39 +401,16 @@ public partial class TabView : ContentView, ITabViewController
 			throw new NullReferenceException($"The provided TabViewItemDataTemplate returned null when attempting to cast to View.");
 		}
 
-		//resultTabViewItem.BindingContext = tabModel;
+		resultTabViewItem.BindingContext = tabModel;
 
 		return resultTabViewItem;
 	}
 
-	protected override void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-	{
-		base.OnPropertyChanged(propertyName);
-
-		switch (propertyName)
-		{
-			case nameof(TabItemsSource):
-				UpdateTabItemsSource();
-				break;
-			case nameof(Tabs):
-				UpdateTabs();
-				break;
-			default:
-				break;
-		}
-	}
-
 	void UpdateTabItemsSource()
 	{
-		if (internalTabItemSource is not null)
+		if (TabItemsSource is ObservableCollection<TabViewItem> source)
 		{
-			internalTabItemSource.CollectionChanged -= OnTabItemsSourceCollectionChanged;
-			internalTabItemSource = null;
-		}
-		if (TabItemsSource is INotifyCollectionChanged source)
-		{
-			internalTabItemSource = source;
-			internalTabItemSource.CollectionChanged += OnTabItemsSourceCollectionChanged;
+			source.CollectionChanged += OnTabItemsSourceCollectionChanged;
 		}
 
 		InitializeTabItems();
@@ -456,10 +419,10 @@ public partial class TabView : ContentView, ITabViewController
 	void InitializeTabItems()
 	{
 		var i = 0;
-		foreach (var tabModel in TabItemsSource ?? new object[0])
+		foreach (var tabModel in TabItems)
 		{
 			var tab = CreateTabItem(tabModel);
-			Tabs.Insert(i++, tab);
+			tabItemsInternal.Insert(i++, tab);
 		}
 
 		UpdateTabs();
