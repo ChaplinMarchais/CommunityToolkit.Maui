@@ -85,6 +85,7 @@ public partial class AppShell : Shell
 		CreateViewModelMapping<GravatarImageSourcePage, GravatarImageSourceViewModel, ImageSourcesGalleryPage, ImageSourcesGalleryViewModel>(),
 
 		// Add Layouts View Models
+		CreateViewModelMapping<DockLayoutPage, DockLayoutViewModel, LayoutsGalleryPage, LayoutsGalleryViewModel>(),
 		CreateViewModelMapping<StateContainerPage, StateContainerViewModel, LayoutsGalleryPage, LayoutsGalleryViewModel>(),
 		CreateViewModelMapping<UniformItemsLayoutPage, UniformItemsLayoutViewModel, LayoutsGalleryPage, LayoutsGalleryViewModel>(),
 
@@ -101,6 +102,7 @@ public partial class AppShell : Shell
 		CreateViewModelMapping<AvatarViewShapesPage, AvatarViewShapesViewModel, ViewsGalleryPage, ViewsGalleryViewModel>(),
 		CreateViewModelMapping<AvatarViewSizesPage, AvatarViewSizesViewModel, ViewsGalleryPage, ViewsGalleryViewModel>(),
 		CreateViewModelMapping<DrawingViewPage, DrawingViewViewModel, ViewsGalleryPage, ViewsGalleryViewModel>(),
+		CreateViewModelMapping<ExpanderPage, ExpanderViewModel, ViewsGalleryPage, ViewsGalleryViewModel>(),
 		CreateViewModelMapping<MultiplePopupPage, MultiplePopupViewModel, ViewsGalleryPage, ViewsGalleryViewModel>(),
 		CreateViewModelMapping<PopupAnchorPage, PopupAnchorViewModel, ViewsGalleryPage, ViewsGalleryViewModel>(),
 		CreateViewModelMapping<PopupPositionPage, PopupPositionViewModel, ViewsGalleryPage, ViewsGalleryViewModel>(),
@@ -118,7 +120,7 @@ public partial class AppShell : Shell
 	{
 		if (!viewModelType.IsAssignableTo(typeof(BaseViewModel)))
 		{
-			throw new ArgumentException($"{nameof(viewModelType)}  must implement {nameof(BaseViewModel)}", nameof(viewModelType));
+			throw new ArgumentException($"{nameof(viewModelType)} must implement {nameof(BaseViewModel)}", nameof(viewModelType));
 		}
 
 		if (!viewModelMappings.TryGetValue(viewModelType, out (Type GalleryPageType, Type ContentPageType) mapping))
@@ -132,11 +134,10 @@ public partial class AppShell : Shell
 
 	static string GetPageRoute(Type galleryPageType, Type contentPageType) => $"//{galleryPageType.Name}/{contentPageType.Name}";
 
-	static KeyValuePair<Type, (Type GalleryPageType, Type ContentPageType)> CreateViewModelMapping<TPage, TViewModel, TGalleryPage, TGalleryViewModel>()
-		where TPage : BasePage<TViewModel>
-		where TViewModel : BaseViewModel
-		where TGalleryPage : BaseGalleryPage<TGalleryViewModel>
-		where TGalleryViewModel : BaseGalleryViewModel
+	static KeyValuePair<Type, (Type GalleryPageType, Type ContentPageType)> CreateViewModelMapping<TPage, TViewModel, TGalleryPage, TGalleryViewModel>() where TPage : BasePage<TViewModel>
+																																							where TViewModel : BaseViewModel
+																																							where TGalleryPage : BaseGalleryPage<TGalleryViewModel>
+																																							where TGalleryViewModel : BaseGalleryViewModel
 	{
 		return new KeyValuePair<Type, (Type GalleryPageType, Type ContentPageType)>(typeof(TViewModel), (typeof(TGalleryPage), typeof(TPage)));
 	}
