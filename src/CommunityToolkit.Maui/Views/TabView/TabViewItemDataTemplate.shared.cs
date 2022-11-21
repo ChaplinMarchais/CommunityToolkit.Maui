@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using Microsoft.Maui.Controls;
 
 namespace CommunityToolkit.Maui.Views;
 
@@ -26,7 +27,7 @@ public class TabViewItemDataTemplate : DataTemplate
 		Grid.SetRow(tabItemCard, (int)Row.Content);
 		Grid.SetColumn(tabItemCard, (int)Column.Content);
 
-		return new Grid
+		var container = new Grid
 		{
 
 			RowDefinitions = new()
@@ -42,9 +43,15 @@ public class TabViewItemDataTemplate : DataTemplate
 				new ColumnDefinition() { Width = GridLength.Star },
 				new ColumnDefinition() { Width = 6 },
 			},
-
-			Children = { tabItemCard }
 		};
+
+		var templateBinding = new Binding();
+		templateBinding.Source = new RelativeBindingSource(RelativeBindingSourceMode.TemplatedParent);
+		container.BindingContext = templateBinding;
+
+		container.Add(tabItemCard);
+
+		return container;
 	}
 
 	class TabItemCard : Frame
@@ -59,7 +66,7 @@ public class TabViewItemDataTemplate : DataTemplate
 
 				nameLabel.SetValue(Grid.RowProperty, ToInt(Rows.Title));
 
-				nameLabel.SetBinding(Label.TextProperty, nameof(TabViewItem.Text), BindingMode.OneWay);
+				nameLabel.SetBinding(Label.TextProperty, nameof(TabViewItem.Text));
 				nameLabel.SetBinding(Label.TextColorProperty, nameof(TabViewItem.TextColor), BindingMode.OneWay);
 				nameLabel.SetBinding(Label.FontSizeProperty, nameof(TabViewItem.FontSize), BindingMode.OneWay);
 

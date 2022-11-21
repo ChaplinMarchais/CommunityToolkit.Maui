@@ -3,22 +3,22 @@ namespace CommunityToolkit.Maui.Views;
 /// <summary>
 /// The tab view item.
 /// </summary>
-[ContentProperty(nameof(TabConentView))]
-public partial class TabViewItem : TemplatedView
+[ContentProperty(nameof(Content))]
+public partial class TabViewItem : ContentView
 {
-	/// <summary>
-	/// Gets or sets the <see cref="IView"/> to be displayed when the <see cref="TabViewItem"/> is selected
-	/// </summary>
-	public static readonly BindableProperty TabConentViewProperty = BindableProperty.Create(nameof(TabConentView), typeof(IView), typeof(TabViewItem), default(View));
+	///// <summary>
+	///// Gets or sets the <see cref="IView"/> to be displayed when the <see cref="TabViewItem"/> is selected
+	///// </summary>
+	//public static readonly BindableProperty TabConentViewProperty = BindableProperty.Create(nameof(TabConentView), typeof(IView), typeof(TabViewItem), default(View));
 
-	/// <summary>
-	/// Gets or sets the <see cref="IView"/> to be displayed when the <see cref="TabViewItem"/> is selected
-	/// </summary>
-	public IView? TabConentView
-	{
-		get => (IView?)GetValue(TabConentViewProperty);
-		set => SetValue(TabConentViewProperty, value);
-	}
+	///// <summary>
+	///// Gets or sets the <see cref="IView"/> to be displayed when the <see cref="TabViewItem"/> is selected
+	///// </summary>
+	//public IView? TabConentView
+	//{
+	//	get => (IView?)GetValue(TabConentViewProperty);
+	//	set => SetValue(TabConentViewProperty, value);
+	//}
 
 	/// <summary>
 	/// Gets or sets the icon.
@@ -50,7 +50,7 @@ public partial class TabViewItem : TemplatedView
 	/// <summary>
 	/// Gets or sets the text.
 	/// </summary>
-	public static readonly BindableProperty TextProperty = BindableProperty.Create(nameof(Text), typeof(string), typeof(TabViewItem), string.Empty);
+	public static readonly BindableProperty TextProperty = BindableProperty.Create(nameof(Text), typeof(string), typeof(TabViewItem));
 	/// <summary>
 	/// Gets or sets the text.
 	/// </summary>
@@ -115,15 +115,7 @@ public partial class TabViewItem : TemplatedView
 	/// <summary>
 	/// This property tracks if the <see cref="TabViewItem"/> is selected
 	/// </summary>
-	public static readonly BindableProperty IsSelectedProperty = BindableProperty.Create(nameof(IsSelected), typeof(bool), typeof(TabViewItem), false, propertyChanged: OnIsSelectedChanged);
-
-	static void OnIsSelectedChanged(BindableObject bindable, object oldvalue, object newValue)
-	{
-		if (bindable is TabViewItem tabViewItem)
-		{
-			tabViewItem.Update((bool)newValue);
-		}
-	}
+	public static readonly BindableProperty IsSelectedProperty = BindableProperty.Create(nameof(IsSelected), typeof(bool), typeof(TabViewItem), false);
 
 	/// <summary>
 	/// This property tracks if the <see cref="TabViewItem"/> is selected
@@ -134,31 +126,17 @@ public partial class TabViewItem : TemplatedView
 		set => SetValue(IsSelectedProperty, value);
 	}
 
-	void Update(bool isSelected)
-	{
-		if (container is null)
-		{
-			return;
-		}
-
-		container.BackgroundColor = isSelected ? TextColorSelected : BackgroundColor;
-	}
-
-	Grid? container;
-
 	/// <summary>
 	/// Initializes a new instance of the <see cref="TabViewItem"/> class.
 	/// </summary>
 	public TabViewItem()
 	{
-	}
-
-	/// <inheritdoc />
-	protected override void OnApplyTemplate()
-	{
-		base.OnApplyTemplate();
-
-		container = Children.Select(e => e.IsTemplateRoot == true) as Grid;
 
 	}
+
+	///// <inheritdoc />
+	//protected override void OnApplyTemplate()
+	//{
+	//	base.OnApplyTemplate();
+	//}
 }

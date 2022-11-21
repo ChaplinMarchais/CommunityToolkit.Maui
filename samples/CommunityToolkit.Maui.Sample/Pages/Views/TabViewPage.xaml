@@ -8,35 +8,40 @@
              x:TypeArguments="viewModels:TabViewViewModel"
              x:DataType="viewModels:TabViewViewModel"
              Title="TabView">
-    <mct:TabView x:Name="TabViewContainer" TabStripPlacement="Bottom"
+    <VerticalStackLayout Spacing="10">
+        <Label Text="A basic example of how to use the TabView from XAML"/>
+
+        <Frame HasShadow="True">
+            <mct:TabView x:Name="TabViewContainer" TabStripPlacement="Bottom"
                 TabStripBackgroundColor="Blue"
                 TabStripHeight="60"
                 TabIndicatorColor="Yellow"
                 TabContentBackgroundColor="Yellow">
-        <mct:TabViewItem Icon="triangle.png"
+                <mct:TabViewItem Icon="triangle.png"
                             Text="Tab 1"
                             TextColor="White"
                             TextColorSelected="Yellow"
                             FontSize="12">
-            <Grid 
+                    <Grid 
                                 BackgroundColor="Gray">
-                <Label
+                        <Label
                                     HorizontalOptions="Center"
                                     VerticalOptions="Center"
                                     Text="TabContent1" />
-            </Grid>
-        </mct:TabViewItem>
-        <mct:TabViewItem Icon="circle.png"
+                    </Grid>
+                </mct:TabViewItem>
+                <mct:TabViewItem Icon="circle.png"
                     Text="Tab 2"
                     TextColor="White"
                     TextColorSelected="Yellow"
                     FontSize="12">
-            <Grid>
-                <Label    ~
-                                    HorizontalOptions="Center"
-                                    VerticalOptions="Center"
-                                    Text="TabContent2" />
-            </Grid>
-        </mct:TabViewItem>
-    </mct:TabView>
+                    <Grid>
+                        <Label HorizontalOptions="Center"
+                    VerticalOptions="Center"
+                    Text="TabContent2" />
+                    </Grid>
+                </mct:TabViewItem>
+            </mct:TabView>
+        </Frame>
+    </VerticalStackLayout>
 </pages:BasePage>
