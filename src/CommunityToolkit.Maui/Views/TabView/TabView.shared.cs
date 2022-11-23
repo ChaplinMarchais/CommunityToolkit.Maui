@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using CommunityToolkit.Maui.Helpers;
+using CommunityToolkit.Maui.Layouts;
 
 namespace CommunityToolkit.Maui.Views;
 /// <summary>
@@ -42,7 +43,7 @@ public partial class TabView : ContentView, IDisposable
 	}
 
 
-	public static readonly BindableProperty TabIndicatorDataTemplateProperty = BindableProperty.Create(nameof(TabIndicatorDataTemplate), typeof(DataTemplate), typeof(TabView), defaultValue: new TabViewItemDataTemplate());
+	public static readonly BindableProperty TabIndicatorDataTemplateProperty = BindableProperty.Create(nameof(TabIndicatorDataTemplate), typeof(DataTemplate), typeof(TabView), defaultValue: null);
 	/// <summary>
 	/// Gets or sets the tab view item data template.
 	/// </summary>
@@ -262,15 +263,19 @@ public partial class TabView : ContentView, IDisposable
 		CurrentTab ??= TabItems.Count > 1 ? TabItems[SelectedTabIndex] : null;
 
 		tabContentView = new Frame();
-		
-		TabIndicatorView = new HorizontalStackLayout();
+
+		TabIndicatorView = new UniformItemsLayout
+		{
+			BindingContext = this,
+			MaxRows = 1,
+		};
 		TabIndicatorView.SetBinding(HorizontalStackLayout.BackgroundColorProperty, nameof(TabView.TabIndicatorColor));
 
 		base.Content = new Grid
 		{
 			RowDefinitions =
 			{
-				new RowDefinition(GridLength.Auto),
+				new RowDefinition(GridLength.Star),
 				new RowDefinition(GridLength.Auto),
 			},
 		};
@@ -295,7 +300,7 @@ public partial class TabView : ContentView, IDisposable
 					foreach (var item in e.NewItems)
 					{
 						var tab = CreateTabIndicator(item);
-						((IStackLayout)TabIndicatorView).Insert(index++, tab);
+						((UniformItemsLayout)TabIndicatorView).Insert(index++, tab);
 					}
 				}
 				break;
@@ -304,7 +309,7 @@ public partial class TabView : ContentView, IDisposable
 				{
 					for (int i = e.OldStartingIndex + (e.OldItems.Count - 1); i >= e.OldStartingIndex; i--)
 					{
-						((IStackLayout)TabIndicatorView).RemoveAt(i);
+						((UniformItemsLayout)TabIndicatorView).RemoveAt(i);
 					}
 				}
 				break;
@@ -313,41 +318,37 @@ public partial class TabView : ContentView, IDisposable
 		}
 	}
 
-	/// <summary>
-	/// Create a new <see cref="TabViewItem"/> from a given <paramref name="tabModel"/>
-	/// </summary>
-	/// <param name="tabModel">The model from which the tab is to be created</param>
-	protected IView CreateTabIndicator(object tabModel)
+	View CreateTabIndicator(object tabModel)
 	{
 		View? result;
 
-		if(tabModel is not TabViewItem)
-		{
-			throw new InvalidCastException($"Can not convert an object of Type {tabModel.GetType()} to {nameof(TabViewItem)}");
-		}
+		var tabViewItem = tabModel as TabViewItem 
+			?? throw new InvalidCastException($"Failed to cast the parameter tabModel to {nameof(TabViewItem)}");
 
 		switch (TabIndicatorDataTemplate)
 		{
 			case DataTemplateSelector selector:
 			{
-				var template = selector.SelectTemplate(tabModel, this);
+				var template = selector.SelectTemplate(tabViewItem, this);
 				result = template.CreateContent() as View;
+
+
+				if (result is null)
+				{
+					throw new NullReferenceException($"The provided TabIndicatorDataTemplate returned null when attempting to cast to View.");
+				}
 				break;
 			}
 
+			case null:
 			default:
-				result = TabIndicatorDataTemplate?.CreateContent() as View;
+				result = ((TabViewItem)tabViewItem).TabViewItemIndicatorView;
 				break;
 		}
 
-		if (result is not View resultTabViewItemContent)
-		{
-			throw new NullReferenceException($"The provided TabIndicatorDataTemplate returned null when attempting to cast to View.");
-		}
+		result.BindingContext = tabViewItem;
 
-		resultTabViewItemContent.BindingContext = tabModel;
-
-		return resultTabViewItemContent;
+		return result;
 	}
 
 	void WatchTabItemsSource()

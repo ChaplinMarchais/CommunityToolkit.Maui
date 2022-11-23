@@ -18,7 +18,7 @@
                 TabIndicatorColor="Yellow"
                 TabContentBackgroundColor="Yellow">
                 <mct:TabViewItem Icon="triangle.png"
-                            Text="Tab 1"
+                            Text="ONE"
                             TextColor="White"
                             TextColorSelected="Yellow"
                             FontSize="12">
@@ -34,7 +34,8 @@
                     Text="Tab 2"
                     TextColor="White"
                     TextColorSelected="Yellow"
-                    FontSize="12">
+                    FontSize="25"
+                    IsSelected="True">
                     <Grid>
                         <Label HorizontalOptions="Center"
                     VerticalOptions="Center"
