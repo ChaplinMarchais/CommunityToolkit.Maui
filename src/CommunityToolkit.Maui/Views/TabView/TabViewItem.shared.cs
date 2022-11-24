@@ -1,4 +1,5 @@
 using System.Data.Common;
+using CommunityToolkit.Maui.Core;
 
 namespace CommunityToolkit.Maui.Views;
 
@@ -6,22 +7,8 @@ namespace CommunityToolkit.Maui.Views;
 /// The tab view item.
 /// </summary>
 [ContentProperty(nameof(Content))]
-public partial class TabViewItem : ContentView
+public partial class TabViewItem : ContentView, ITabViewItem
 {
-	///// <summary>
-	///// Gets or sets the <see cref="IView"/> to be displayed when the <see cref="TabViewItem"/> is selected
-	///// </summary>
-	//public static readonly BindableProperty TabConentViewProperty = BindableProperty.Create(nameof(TabConentView), typeof(IView), typeof(TabViewItem), default(View));
-
-	///// <summary>
-	///// Gets or sets the <see cref="IView"/> to be displayed when the <see cref="TabViewItem"/> is selected
-	///// </summary>
-	//public IView? TabConentView
-	//{
-	//	get => (IView?)GetValue(TabConentViewProperty);
-	//	set => SetValue(TabConentViewProperty, value);
-	//}
-
 	/// <summary>
 	/// Gets or sets the icon.
 	/// </summary>
@@ -38,12 +25,11 @@ public partial class TabViewItem : ContentView
 	/// <summary>
 	/// Gets or sets a value indicating whether seperator is visible.
 	/// </summary>
-	public static readonly BindableProperty IsSeperatorVisibleProperty = BindableProperty.Create(nameof(IsSeperatorVisible), typeof(bool), typeof(TabViewItem), true);
-
+	public static readonly BindableProperty IsSeperatorVisibleProperty = BindableProperty.Create(nameof(IsSeparatorVisible), typeof(bool), typeof(TabViewItem), true);
 	/// <summary>
 	/// Gets or sets a value indicating whether seperator is visible.
 	/// </summary>
-	public bool? IsSeperatorVisible
+	public bool? IsSeparatorVisible
 	{
 		get => (bool)GetValue(IsSeperatorVisibleProperty);
 		set => SetValue(IsSeperatorVisibleProperty, value);
@@ -106,6 +92,9 @@ public partial class TabViewItem : ContentView
 	public static readonly BindableProperty FooterProperty = BindableProperty.Create(nameof(Footer),
 		typeof(IView), typeof(TabViewItem));
 
+	/// <summary>
+	/// Gets or sets the label's text color.
+	/// </summary>
 	public static readonly BindableProperty LabelTextColorProperty = BindableProperty.Create(nameof(LabelTextColor), typeof(Color), typeof(TabViewItem.TabViewItemIndicator), default);
 	/// <summary>
 	/// Gets or sets the label's text color.
@@ -116,7 +105,6 @@ public partial class TabViewItem : ContentView
 		set => SetValue(LabelTextColorProperty, value);
 	}
 
-
 	/// <summary>
 	/// Gets or sets the <see cref="TabViewItem"/> footer
 	/// </summary>
@@ -125,7 +113,6 @@ public partial class TabViewItem : ContentView
 		get => (IView)GetValue(FooterProperty);
 		set => SetValue(FooterProperty, value);
 	}
-
 
 	/// <summary>
 	/// This property tracks if the <see cref="TabViewItem"/> is selected
@@ -136,7 +123,7 @@ public partial class TabViewItem : ContentView
 	{
 		if (bindable is TabViewItem tabViewItem)
 		{
-			tabViewItem.UpdateTextColor((bool)newValue);
+			tabViewItem.UpdateIndicator((bool)newValue);
 		}
 	}
 
@@ -149,7 +136,11 @@ public partial class TabViewItem : ContentView
 		set => SetValue(IsSelectedProperty, value);
 	}
 
-	public void UpdateTextColor(bool isSelected)
+	/// <summary>
+	/// Update the <see cref="TabViewItemIndicator.NameLabel"/> to 
+	/// </summary>
+	/// <param name="isSelected"></param>
+	public void UpdateIndicator(bool isSelected)
 	{
 		LabelTextColor = isSelected ? TextColorSelected : TextColor;
 	}
@@ -236,7 +227,7 @@ public partial class TabViewItem : ContentView
 					Margin = new Thickness(10, 0),
 				};
 
-				seperator.SetBinding(BoxView.IsVisibleProperty, nameof(TabViewItem.IsSeperatorVisible), BindingMode.OneWay);
+				seperator.SetBinding(BoxView.IsVisibleProperty, nameof(TabViewItem.IsSeparatorVisible), BindingMode.OneWay);
 
 				return seperator;
 			}
