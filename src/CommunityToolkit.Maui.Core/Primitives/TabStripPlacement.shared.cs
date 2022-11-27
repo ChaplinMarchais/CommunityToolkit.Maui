@@ -1,7 +1,7 @@
-﻿namespace CommunityToolkit.Maui.Views;
+﻿namespace CommunityToolkit.Maui.Core;
 
 /// <summary>
-/// Specifies the placement of the TabStrip for a <see cref="TabView"/>
+/// Specifies the placement of the Strip containing the TabViewItemIndicators for a <see cref="ITabView"/>
 /// </summary>
 [Flags]
 public enum TabStripPlacement

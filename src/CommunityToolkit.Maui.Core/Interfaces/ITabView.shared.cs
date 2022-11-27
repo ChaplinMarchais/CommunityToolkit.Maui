@@ -38,11 +38,21 @@ public interface ITabView
 	/// </summary>
 	IView? TabIndicatorView { get; set; }
 
-	/// <inheritdoc/>
+	/// <summary>
+	/// Gets the currently selected <see cref="ITabViewItem"/>
+	/// </summary>
+	/// <returns>
+	/// Will return <c>null</c> if the <see cref="TabItems"/> collection is <c>null</c>
+	/// </returns>
 	ITabViewItem? CurrentTab { get; }
 
 	/// <summary>
 	/// Gets the currently displayed content for the selected <see cref="ITabViewItem"/>
 	/// </summary>
 	IView? TabContentView { get; }
+
+	/// <summary>
+	/// Event is triggered whenever the <see cref="SelectedTabIndex"/> is changed
+	/// </summary>
+	event EventHandler<TabSelectionChangedEventArgs> SelectionChanged;
 }

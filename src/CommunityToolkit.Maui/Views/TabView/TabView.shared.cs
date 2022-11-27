@@ -267,13 +267,13 @@ public partial class TabView : ContentView, IDisposable, ITabView
 		set => SetValue(IsSwipeEnabledProperty, value);
 	}
 
-	readonly WeakEventManager<SelectionChangedEventArgs> selectionChangedManager = new();
+	readonly WeakEventManager<TabSelectionChangedEventArgs> selectionChangedManager = new();
 	readonly WeakEventManager<TabViewScrolledEventArgs> tabViewScrolledManager = new();
 
 	/// <summary>
 	/// This event is called whenever the selected <see cref="TabViewItem"/> is changed.
 	/// </summary>
-	public event EventHandler<SelectionChangedEventArgs> SelectionChanged
+	public event EventHandler<TabSelectionChangedEventArgs> SelectionChanged
 	{
 		add => selectionChangedManager.AddEventHandler(value);
 		remove => selectionChangedManager.RemoveEventHandler(value);
@@ -392,7 +392,6 @@ public partial class TabView : ContentView, IDisposable, ITabView
 				break;
 			}
 
-			case null:
 			default:
 				result = ((TabViewItem)tabViewItem).TabViewItemIndicatorView;
 				break;
