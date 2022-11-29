@@ -215,8 +215,4 @@ jobs:
         displayName: 'Publish NuGets'
         inputs:
           artifactName: nuget
-<<<<<<< HEAD
           pathToPublish: '$(Build.ArtifactStagingDirectory)'
-=======
-          pathToPublish: '$(Build.ArtifactStagingDirectory)'
->>>>>>> main
