@@ -73,7 +73,16 @@ public partial class TabView : ContentView, IDisposable, ITabView
 	/// Gets or sets the selected index.
 	/// </summary>
 	//TODO: Guard clauses to ensure that the value when set is valid for the current TabItems collection size
-	public static readonly BindableProperty SelectedTabIndexProperty = BindableProperty.Create(nameof(SelectedTabIndex), typeof(int), typeof(TabView), defaultValue: 0);
+	public static readonly BindableProperty SelectedTabIndexProperty = BindableProperty.Create(nameof(SelectedTabIndex), typeof(int), typeof(TabView), defaultValue: 0, propertyChanged: SelectedTabIndexChanged);
+
+	static void SelectedTabIndexChanged(BindableObject bindable, object oldValue, object newValue)
+	{
+		if (bindable is TabView tabView)
+		{
+			tabView.TabItems[(int) oldValue].IsSelected = false;
+			tabView.TabItems[(int) newValue].IsSelected = true;
+		}
+	}
 
 	/// <summary>
 	/// Gets or sets the selected index.
@@ -267,13 +276,13 @@ public partial class TabView : ContentView, IDisposable, ITabView
 		set => SetValue(IsSwipeEnabledProperty, value);
 	}
 
-	readonly WeakEventManager<TabSelectionChangedEventArgs> selectionChangedManager = new();
+	readonly WeakEventManager<SelectionChangedEventArgs> selectionChangedManager = new();
 	readonly WeakEventManager<TabViewScrolledEventArgs> tabViewScrolledManager = new();
 
 	/// <summary>
 	/// This event is called whenever the selected <see cref="TabViewItem"/> is changed.
 	/// </summary>
-	public event EventHandler<TabSelectionChangedEventArgs> SelectionChanged
+	public event EventHandler<SelectionChangedEventArgs> SelectionChanged
 	{
 		add => selectionChangedManager.AddEventHandler(value);
 		remove => selectionChangedManager.RemoveEventHandler(value);
@@ -289,14 +298,12 @@ public partial class TabView : ContentView, IDisposable, ITabView
 	}
 
 	/// <inheritdoc/>
-	public ITabViewItem? CurrentTab { get; internal set; }
+	public ITabViewItem? CurrentTab => TabItems.ElementAtOrDefault(SelectedTabIndex);
 
 	/// <summary>
 	/// Gets the currently displayed content for the selected <see cref="TabViewItem"/>
 	/// </summary>
-	public IView? TabContentView { get; private set; }
-	
-	Grid ContentGrid => (Grid)base.Content;
+	public IView TabContentView { get; internal set; } = new Frame();
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="TabView"/> class.
@@ -306,10 +313,6 @@ public partial class TabView : ContentView, IDisposable, ITabView
 		TabItems.CollectionChanged += OnTabItemsCollectionChanged;
 		InitializeTabItems();
 
-		CurrentTab ??= TabItems.Count > 1 ? TabItems[SelectedTabIndex] : null;
-
-		TabContentView = new Frame();
-
 		TabIndicatorView = new UniformItemsLayout
 		{
 			BindingContext = this,
@@ -318,7 +321,7 @@ public partial class TabView : ContentView, IDisposable, ITabView
 
 		((View)TabIndicatorView).SetBinding(HorizontalStackLayout.BackgroundColorProperty, nameof(TabView.TabIndicatorColor));
 
-		base.Content = new Grid
+		var contentGrid = new Grid
 		{
 			RowDefinitions =
 			{
@@ -327,11 +330,13 @@ public partial class TabView : ContentView, IDisposable, ITabView
 			},
 		};
 
-		ContentGrid.SetRow(TabContentView, 0);
-		ContentGrid.SetRow(TabIndicatorView, 1);
+		contentGrid.SetRow(TabContentView, 0);
+		contentGrid.SetRow(TabIndicatorView, 1);
 
-		ContentGrid.Add(TabContentView);
-		ContentGrid.Add(TabIndicatorView);
+		contentGrid.Add(TabContentView);
+		contentGrid.Add(TabIndicatorView);
+
+		Content = contentGrid;
 
 		Padding = new Thickness(0, 10, 0, 0);
 	}
@@ -374,8 +379,9 @@ public partial class TabView : ContentView, IDisposable, ITabView
 	{
 		View? result;
 
-		var tabViewItem = tabModel as TabViewItem 
-			?? throw new InvalidCastException($"Failed to cast the parameter tabModel to {nameof(TabViewItem)}");
+		var tabViewItem = tabModel as TabViewItem
+		                  ?? throw new InvalidCastException(
+			                  $"Failed to cast the parameter tabModel to {nameof(TabViewItem)}");
 
 		switch (TabIndicatorDataTemplate)
 		{
@@ -387,13 +393,15 @@ public partial class TabView : ContentView, IDisposable, ITabView
 
 				if (result is null)
 				{
-					throw new NullReferenceException($"The provided TabIndicatorDataTemplate returned null when attempting to cast to View.");
+					throw new NullReferenceException(
+						$"The provided TabIndicatorDataTemplate returned null when attempting to cast to View.");
 				}
+
 				break;
 			}
 
 			default:
-				result = ((TabViewItem)tabViewItem).TabViewItemIndicatorView;
+				result = ((TabViewItem) tabViewItem).TabViewItemIndicatorView;
 				break;
 		}
 
@@ -402,19 +410,13 @@ public partial class TabView : ContentView, IDisposable, ITabView
 		return result;
 	}
 
-	void WatchTabItemsSource()
-	{
-		if (TabItemsSource is ObservableCollection<TabViewItem> source)
-		{
-			source.CollectionChanged += OnTabItemsCollectionChanged;
-		}
-	}
-
 	void InitializeTabItems()
 	{
 		foreach (var tabModel in TabItems)
 		{
 			var tab = CreateTabIndicator(tabModel);
+			TapGestureRecognizer tapGesture = new() { Command = new Command<TabViewItem>(OnTabViewItemSelected), CommandParameter = tab};
+			tab.GestureRecognizers.Add(tapGesture);
 			
 			if(TabIndicatorView is StackLayout tabIndicatorView)
 			{
@@ -422,6 +424,29 @@ public partial class TabView : ContentView, IDisposable, ITabView
 			}
 		}
 	}
+
+	void OnTabViewItemSelected(Element element) => OnTabViewItemSelectedAsync(element).FireAndForget();
+
+	Task OnTabViewItemSelectedAsync(Element element)
+	{
+		IView? contentView;
+
+		switch (element)
+		{
+			case TabViewItem i:
+				SelectedTabIndex = GetTabIndicatorIndex(i);
+				contentView = i.Content;
+				break;
+			default:
+				return Task.CompletedTask;
+		}
+
+		TabContentView = contentView;
+
+		return Task.CompletedTask;
+	}
+
+	int GetTabIndicatorIndex(ITabViewItem tab) => TabItems.IndexOf(tab);
 
 	#region IDisposable Implementation
 
