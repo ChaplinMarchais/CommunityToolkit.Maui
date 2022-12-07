@@ -6,9 +6,31 @@ namespace CommunityToolkit.Maui.Views;
 /// <summary>
 /// The tab view item.
 /// </summary>
-[ContentProperty(nameof(Content))]
+[ContentProperty(nameof(TabViewContent))]
 public partial class TabViewItem : ContentView, ITabViewItem
 {
+	/// <summary>
+	/// Gets or sets the icon.
+	/// </summary>
+	public static readonly BindableProperty TabViewContentProperty = BindableProperty.Create(nameof(TabViewContent), typeof(IView), typeof(TabViewItem), propertyChanged: TabViewContentPropertyChanged);
+
+	static void TabViewContentPropertyChanged(BindableObject bindable, object oldvalue, object newvalue)
+	{
+		if (bindable is TabViewItemBase tvi)
+		{
+			//TODO: Tell the TabView that the content should be updated
+		}
+	}
+
+	/// <summary>
+	/// Gets or sets the icon.
+	/// </summary>
+	public IView? TabViewContent
+	{
+		get => (IView)GetValue(TabViewContentProperty);
+		set => SetValue(TabViewContentProperty, value);
+	}
+
 	/// <summary>
 	/// Gets or sets the icon.
 	/// </summary>
@@ -23,16 +45,16 @@ public partial class TabViewItem : ContentView, ITabViewItem
 	}
 
 	/// <summary>
-	/// Gets or sets a value indicating whether seperator is visible.
+	/// Gets or sets a value indicating whether separator is visible.
 	/// </summary>
-	public static readonly BindableProperty IsSeperatorVisibleProperty = BindableProperty.Create(nameof(IsSeparatorVisible), typeof(bool), typeof(TabViewItem), true);
+	public static readonly BindableProperty IsSeparatorVisibleProperty = BindableProperty.Create(nameof(IsSeparatorVisible), typeof(bool), typeof(TabViewItem), true);
 	/// <summary>
-	/// Gets or sets a value indicating whether seperator is visible.
+	/// Gets or sets a value indicating whether separator is visible.
 	/// </summary>
 	public bool? IsSeparatorVisible
 	{
-		get => (bool)GetValue(IsSeperatorVisibleProperty);
-		set => SetValue(IsSeperatorVisibleProperty, value);
+		get => (bool)GetValue(IsSeparatorVisibleProperty);
+		set => SetValue(IsSeparatorVisibleProperty, value);
 	}
 
 	/// <summary>
@@ -60,6 +82,19 @@ public partial class TabViewItem : ContentView, ITabViewItem
 		get => (Color)GetValue(TextColorProperty);
 		set => SetValue(TextColorProperty, value);
 	}
+	
+	///// <summary>
+	///// Gets or sets the tab indicator's background color.
+	///// </summary>
+	//public static readonly BindableProperty BackgroundColorProperty = BindableProperty.Create(nameof(BackgroundColor), typeof(Color), typeof(TabViewItem), Brush.Transparent);
+	///// <summary>
+	///// Gets or sets the tab indicator's background color.
+	///// </summary>
+	//public Color BackgroundColor
+	//{
+	//	get => (Color)GetValue(BackgroundColorProperty);
+	//	set => SetValue(BackgroundColorProperty, value);
+	//}
 
 	/// <summary>
 	/// Gets or sets the text color selected.
@@ -92,17 +127,24 @@ public partial class TabViewItem : ContentView, ITabViewItem
 	public static readonly BindableProperty FooterProperty = BindableProperty.Create(nameof(Footer),
 		typeof(IView), typeof(TabViewItem));
 
+	
+	internal static readonly BindablePropertyKey LabelTextColorPropertyKey =
+		BindableProperty.CreateReadOnly(nameof(LabelTextColor), typeof(Color), typeof(TabViewItem.TabViewItemIndicator),
+			Colors.White);
+
 	/// <summary>
 	/// Gets or sets the label's text color.
 	/// </summary>
-	public static readonly BindableProperty LabelTextColorProperty = BindableProperty.Create(nameof(LabelTextColor), typeof(Color), typeof(TabViewItem.TabViewItemIndicator), default);
+	public static readonly BindableProperty LabelTextColorProperty = LabelTextColorPropertyKey.BindableProperty;
+
+
 	/// <summary>
 	/// Gets or sets the label's text color.
 	/// </summary>
 	public Color LabelTextColor
 	{
 		get => (Color)GetValue(LabelTextColorProperty);
-		set => SetValue(LabelTextColorProperty, value);
+		internal set => SetValue(LabelTextColorPropertyKey, value);
 	}
 
 	/// <summary>
@@ -160,32 +202,12 @@ public partial class TabViewItem : ContentView, ITabViewItem
 
 	internal class TabViewItemIndicator : Frame
 	{
+		Grid NameLabel => CreateNameLabel();
 
-
-
-		//static void OnLabelTextColorChanged(BindableObject bindable, object oldValue, object newValue)
-		//{
-		//	var indicatorGrid = (Grid)bindable;
-
-		//	var indicatorLabel = indicatorGrid.Children.FirstOrDefault(c => c.GetType() == typeof(Label)) as Label;
-
-		//	if (indicatorLabel is not null)
-		//	{
-		//		indicatorLabel.TextColor = (Color)newValue;
-		//	}
-		//}
-
-
-
-		enum Rows { Title = 0, Seperator = 1, Footer = 2 }
-
-		Grid NameLabel { get; set; } = GetNameLabel();
-
-		static Grid GetNameLabel()
+		static Grid CreateNameLabel()
 		{
 			var labelGrid = new Grid
 			{
-				Background = Brush.Transparent,
 				ColumnSpacing = 0,
 				RowDefinitions =
 					{
@@ -193,6 +215,9 @@ public partial class TabViewItem : ContentView, ITabViewItem
 						new RowDefinition(GridLength.Star),
 					},
 			};
+
+			labelGrid.SetBinding(Grid.BackgroundColorProperty,
+				nameof(TabViewItem.BackgroundColor));
 
 			Image labelIcon = new()
 			{
@@ -204,9 +229,9 @@ public partial class TabViewItem : ContentView, ITabViewItem
 			var labelText = new Label();
 
 			labelText.SetBinding(Label.TextProperty, nameof(TabViewItem.Text));
-			labelText.SetBinding(Label.TextColorProperty, nameof(TabViewItem.LabelTextColor), BindingMode.OneWay);
+			labelText.SetBinding(Label.TextColorProperty, nameof(TabViewItem.LabelTextColor));
 			//labelText.SetBinding(Label.TextColorProperty, new Binding(nameof(TabViewItem.TabViewItemIndicator.LabelTextColor), source: new RelativeBindingSource(RelativeBindingSourceMode.Self)));
-			labelText.SetBinding(Label.FontSizeProperty, nameof(TabViewItem.FontSize), BindingMode.OneWay);
+			labelText.SetBinding(Label.FontSizeProperty, nameof(TabViewItem.FontSize));
 
 			labelGrid.Add(labelIcon);
 			labelGrid.Add(labelText);

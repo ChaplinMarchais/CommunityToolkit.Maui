@@ -5,6 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CommunityToolkit.Maui.Sample.Helpers;
+/// <summary>
+/// 
+/// </summary>
 public static class ViewHelpers
 {
 	/// <summary>

@@ -19,24 +19,22 @@
                 TabIndicatorColor="Yellow"
                 TabContentBackgroundColor="Yellow">
                     <mct:TabViewItem Icon="triangle.png"
-                            Text="ONE"
+                            BackgroundColor="DarkGrey"
+                            Text="TAB ONE"
                             TextColor="White"
                             TextColorSelected="Yellow"
                             FontSize="12">
-                        <Grid 
-                                BackgroundColor="Gray">
-                            <Label
-                                    HorizontalOptions="Center"
-                                    VerticalOptions="Center"
-                                    Text="TabContent1" />
+                        <Grid BackgroundColor="Gray">
+                            <Label HorizontalOptions="Center"
+                                VerticalOptions="Center"
+                                Text="TabContent1" />
                         </Grid>
                     </mct:TabViewItem>
                     <mct:TabViewItem Icon="circle.png"
                     Text="Tab 2"
                     TextColor="White"
                     TextColorSelected="Yellow"
-                    FontSize="25"
-                    IsSelected="True">
+                    FontSize="25">
                         <Grid>
                             <Label HorizontalOptions="Center"
                     VerticalOptions="Center"

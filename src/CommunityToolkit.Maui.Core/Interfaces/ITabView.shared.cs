@@ -50,9 +50,4 @@ public interface ITabView
 	/// Gets the currently displayed content for the selected <see cref="ITabViewItem"/>
 	/// </summary>
 	IView? TabContentView { get; }
-
-	/// <summary>
-	/// Event is triggered whenever the <see cref="SelectedTabIndex"/> is changed
-	/// </summary>
-	event EventHandler<TabSelectionChangedEventArgs> SelectionChanged;
 }

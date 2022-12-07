@@ -21,24 +21,23 @@ public static class TabViewDefaults
 
 /// <summary>
 /// Determines the location and orientation of the <see cref="ITabView.TabIndicatorView"/>
-/// relative to the <see cref=""/>
 /// </summary>
 public enum TabIndicatorPlacement
 {
 	/// <summary>
-	/// Tab Indicators are placed at the left edge of host container
+	/// Tab Indicators are placed at the left edge of the <see cref="ITabView"/>
 	/// </summary>
 	Left = 1,
 	/// <summary>
-	/// Tab Indicators are placed at the Top of host container
+	/// Tab Indicators are placed at the Top of the <see cref="ITabView"/>
 	/// </summary>
 	Top = 2,
 	/// <summary>
-	/// Tab Indicators are placed at the right edge of host container
+	/// Tab Indicators are placed at the right edge of the <see cref="ITabView"/>
 	/// </summary>
 	Right = 4,
 	/// <summary>
-	/// Tab Indicators are placed at the bottom of host container
+	/// Tab Indicators are placed at the bottom of the <see cref="ITabView"/>
 	/// </summary>
 	Bottom = 8,
 }
