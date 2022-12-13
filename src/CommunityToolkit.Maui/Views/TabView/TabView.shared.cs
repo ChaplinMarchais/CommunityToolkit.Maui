@@ -47,14 +47,14 @@ public partial class TabView : ContentView, IDisposable, ITabView
 	/// <summary>
 	/// Gets or sets the tab view item data template.
 	/// </summary>
-	public static readonly BindableProperty TabIndicatorDataTemplateProperty = BindableProperty.Create(nameof(TabIndicatorDataTemplate), typeof(DataTemplate), typeof(TabView), defaultValue: null);
+	public static readonly BindableProperty TabIndicatorTemplateProperty = BindableProperty.Create(nameof(TabIndicatorTemplate), typeof(DataTemplate), typeof(TabView), defaultValue: null);
 	/// <summary>
 	/// Gets or sets the tab view item data template.
 	/// </summary>
-	public DataTemplate? TabIndicatorDataTemplate
+	public DataTemplate? TabIndicatorTemplate
 	{
-		get => GetValue(TabIndicatorDataTemplateProperty) as DataTemplate;
-		set => SetValue(TabIndicatorDataTemplateProperty, value);
+		get => GetValue(TabIndicatorTemplateProperty) as DataTemplate;
+		set => SetValue(TabIndicatorTemplateProperty, value);
 	}
 	/// <summary>
 	/// Gets or sets the tab content data template.
@@ -383,7 +383,7 @@ public partial class TabView : ContentView, IDisposable, ITabView
 		                  ?? throw new InvalidCastException(
 			                  $"Failed to cast the parameter tabModel to {nameof(TabViewItem)}");
 
-		switch (TabIndicatorDataTemplate)
+		switch (TabIndicatorTemplate)
 		{
 			case DataTemplateSelector selector:
 			{
@@ -394,7 +394,7 @@ public partial class TabView : ContentView, IDisposable, ITabView
 				if (result is null)
 				{
 					throw new NullReferenceException(
-						$"The provided TabIndicatorDataTemplate returned null when attempting to cast to View.");
+						$"The provided TabIndicatorTemplate returned null when attempting to cast to View.");
 				}
 
 				break;

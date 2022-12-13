@@ -1,3 +1,4 @@
+
 using System.Data.Common;
 using CommunityToolkit.Maui.Core;
 
@@ -10,13 +11,27 @@ namespace CommunityToolkit.Maui.Views;
 public partial class TabViewItem : ContentView, ITabViewItem
 {
 	/// <summary>
+	/// Name of the style for the <see cref="TabViewItem"/> indicator's label
+	/// </summary>
+	public const string LabelStyle = "TabViewItemLabelStyle";
+	/// <summary>
+	/// Name of the style for the <see cref="TabViewItem"/> indicator's icon
+	/// </summary>
+	public const string ImageStyle = "TabViewItemImageStyle";
+	/// <summary>
+	/// Name of the style for the <see cref="TabViewItem"/> indicator's layout
+	/// </summary>
+	public const string LayoutStyle = "TabViewItemLayoutStyle";
+
+
+	/// <summary>
 	/// Gets or sets the icon.
 	/// </summary>
 	public static readonly BindableProperty TabViewContentProperty = BindableProperty.Create(nameof(TabViewContent), typeof(IView), typeof(TabViewItem), propertyChanged: TabViewContentPropertyChanged);
 
 	static void TabViewContentPropertyChanged(BindableObject bindable, object oldvalue, object newvalue)
 	{
-		if (bindable is TabViewItemBase tvi)
+		if (bindable is TabViewIndicator tvi)
 		{
 			//TODO: Tell the TabView that the content should be updated
 		}
@@ -253,7 +268,6 @@ public partial class TabViewItem : ContentView, ITabViewItem
 				};
 
 				seperator.SetBinding(BoxView.IsVisibleProperty, nameof(TabViewItem.IsSeparatorVisible), BindingMode.OneWay);
-
 				return seperator;
 			}
 		}
@@ -297,7 +311,7 @@ public partial class TabViewItem : ContentView, ITabViewItem
 					Seperator,
 					Footer,
 				}
-			};
+			}; 
 
 			container.SetRow(NameLabel, 0);
 			container.SetRow(Seperator, 1);
